@@ -1,0 +1,85 @@
+Tagger (transformers): ner
+Tagger (flair): pos-multi
+
+------------ Caso 0 ------------
+text: George Washington went to Washington .
+
+TRANSFORMERS: 
+
+{'word': 'George', 'score': 0.9977090954780579, 'entity': 'I-PER', 'index': 1}
+{'word': 'Washington', 'score': 0.9991191029548645, 'entity': 'I-PER', 'index': 2}
+{'word': 'Washington', 'score': 0.9569661021232605, 'entity': 'I-LOC', 'index': 5}
+
++++ (transformer) time: 9.698072671890259
+
+FLAIR: 
+
+George <PROPN> Washington <PROPN> went <VERB> to <ADP> Washington <PROPN> . <PUNCT>
+
++++ (flair) time: 2.2814667224884033
+
+------------ Caso 1 ------------
+text: George returned to Berlin to return his hat to the shop.
+
+TRANSFORMERS: 
+
+{'word': 'George', 'score': 0.9984049797058105, 'entity': 'I-PER', 'index': 1}
+{'word': 'Berlin', 'score': 0.999508261680603, 'entity': 'I-LOC', 'index': 4}
+
++++ (transformer) time: 9.742459535598755
+
+FLAIR: 
+
+George <PROPN> returned <VERB> to <ADP> Berlin <PROPN> to <PART> return <VERB> his <PRON> hat <NOUN> to <ADP> the <DET> shop <NOUN> . <PUNCT>
+
+
++++ (flair) time: 0.5286543369293213
+
+------------ Caso 2 ------------
+text: He had a look at different hats in Donostia .
+
+TRANSFORMERS: 
+
+{'word': 'Don', 'score': 0.9974855780601501, 'entity': 'I-LOC', 'index': 9}
+{'word': '##ost', 'score': 0.9828565120697021, 'entity': 'I-LOC', 'index': 10}
+{'word': '##ia', 'score': 0.9957254528999329, 'entity': 'I-LOC', 'index': 11}
+
++++ (transformer) time: 9.65591025352478
+
+FLAIR: 
+
+He <PRON> had <VERB> a <DET> look <NOUN> at <ADP> different <ADJ> hats <NOUN> in <ADP> Donostia <PROPN> . <PUNCT>
+
++++ (flair) time: 0.5132744312286377
+
+------------ Caso 3 ------------
+text: This is a sentence. This is another sentence. I love San Sebastian.
+
+TRANSFORMERS: 
+
+{'word': 'San', 'score': 0.9721660614013672, 'entity': 'I-ORG', 'index': 13}
+{'word': 'Sebastian', 'score': 0.9834555387496948, 'entity': 'I-ORG', 'index': 14}
+
++++ (transformer) time: 9.590413570404053
+
+FLAIR: 
+
+This <PRON> is <AUX> a <DET> sentence <NOUN> . <PUNCT>
+This <PRON> is <AUX> another <DET> sentence <NOUN> . <PUNCT>
+I <PRON> love <VERB> San <PROPN> Sebastian <PROPN> . <PUNCT>
+
+
++++ (flair) time: 0.49658727645874023
+
+------------ Caso 4 ------------
+text: enormously entertaining for moviegoers of any age .
+TRANSFORMERS: 
+
+
++++ (transformer) time: 9.623498439788818
+
+FLAIR: 
+
+enormously <ADV> entertaining <ADJ> for <ADP> moviegoers <NOUN> of <ADP> any <DET> age <NOUN> . <PUNCT>
+
++++ (flair) time: 0.5175735950469971
