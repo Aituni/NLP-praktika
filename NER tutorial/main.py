@@ -81,7 +81,7 @@ if "__main__" == __name__:
     
 	try:
 		outfile = open(OUT_FILE, "w")
-		file_cases('ner', 'pos-multi') # tf, fl
+		file_cases('ner', 'ner') # tf, fl
 		#manual_cases('pos-multi')
 	finally:
 		outfile.close()
