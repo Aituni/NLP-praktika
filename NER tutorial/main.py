@@ -102,7 +102,16 @@ if "__main__" == __name__:
 
 	"""
 	Some interesting models (transformer):
-	- ner: 4-class Named Entity Recognition, english model.
+	- ner: 4-class Named Entity Recognition, english model. example: I-LOC 
+		notation:
+			x-LOC == Location
+			x-PER == Person
+			x-ORG == Organization
+			o == Other
+
+			B-x == Beginning of entity
+			I-x == Inside entity
+			O-x == Outside entity
 	- sentiment-analysis: text classification, [positive, negative] sentiment. English model.
 	- frame: Semantic Frame Detection (experimental). Makes a distinction between two different meanings of the same word.
 			(Error with windows paths)

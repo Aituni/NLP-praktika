@@ -62,7 +62,6 @@ def tag_listSentences(text, clas_type, outfile):
 			dictionary = sentence.to_dict(tag_type=clas_type) #imprimir las etiquetas añadidas con +info
 			for tag in dictionary.get('entities'):
 				outfile.write(str(tag)+"\n")
-			outfile.write("\n")
 		else:
 			outfile.write(sentence.to_tagged_string()+"\n")
 

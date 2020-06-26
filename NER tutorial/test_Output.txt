@@ -10,15 +10,14 @@ TRANSFORMERS:
 {'word': 'Washington', 'score': 0.9991191029548645, 'entity': 'I-PER', 'index': 2}
 {'word': 'Washington', 'score': 0.9569661021232605, 'entity': 'I-LOC', 'index': 5}
 
-+++ (transformer) time: 9.478729724884033
++++ (transformer) time: 9.527711391448975
 
 FLAIR: 
 
 {'text': 'George Washington', 'start_pos': 0, 'end_pos': 17, 'labels': [PER (0.9968)]}
 {'text': 'Washington', 'start_pos': 26, 'end_pos': 36, 'labels': [LOC (0.9994)]}
 
-
-+++ (flair) time: 3.022186517715454
++++ (flair) time: 3.058197259902954
 
 ------------ Caso 1 ------------
 text: George returned to Berlin to return his hat to the shop.
@@ -28,34 +27,30 @@ TRANSFORMERS:
 {'word': 'George', 'score': 0.9984049797058105, 'entity': 'I-PER', 'index': 1}
 {'word': 'Berlin', 'score': 0.999508261680603, 'entity': 'I-LOC', 'index': 4}
 
-+++ (transformer) time: 9.463569402694702
++++ (transformer) time: 9.379196882247925
 
 FLAIR: 
 
 {'text': 'George', 'start_pos': 0, 'end_pos': 6, 'labels': [PER (1.0)]}
 {'text': 'Berlin', 'start_pos': 19, 'end_pos': 25, 'labels': [LOC (1.0)]}
 
-
-
-+++ (flair) time: 1.361555814743042
++++ (flair) time: 1.3490850925445557
 
 ------------ Caso 2 ------------
-text: He had a look at different hats in Donostia .
+text: He had a look at different hats in Mora .
 
 TRANSFORMERS: 
 
-{'word': 'Don', 'score': 0.9974855780601501, 'entity': 'I-LOC', 'index': 9}
-{'word': '##ost', 'score': 0.9828565120697021, 'entity': 'I-LOC', 'index': 10}
-{'word': '##ia', 'score': 0.9957254528999329, 'entity': 'I-LOC', 'index': 11}
+{'word': 'Mo', 'score': 0.9943281412124634, 'entity': 'I-LOC', 'index': 9}
+{'word': '##ra', 'score': 0.8826268911361694, 'entity': 'I-LOC', 'index': 10}
 
-+++ (transformer) time: 9.565029859542847
++++ (transformer) time: 9.376561403274536
 
 FLAIR: 
 
-{'text': 'Donostia', 'start_pos': 35, 'end_pos': 43, 'labels': [LOC (0.9995)]}
+{'text': 'Mora', 'start_pos': 35, 'end_pos': 39, 'labels': [PER (0.9789)]}
 
-
-+++ (flair) time: 1.2076287269592285
++++ (flair) time: 1.1516392230987549
 
 ------------ Caso 3 ------------
 text: This is a sentence. This is another sentence. I love San Sebastian.
@@ -65,27 +60,37 @@ TRANSFORMERS:
 {'word': 'San', 'score': 0.9721660614013672, 'entity': 'I-ORG', 'index': 13}
 {'word': 'Sebastian', 'score': 0.9834555387496948, 'entity': 'I-ORG', 'index': 14}
 
-+++ (transformer) time: 9.488761186599731
++++ (transformer) time: 9.386001110076904
 
 FLAIR: 
-
-
 
 {'text': 'San Sebastian', 'start_pos': 7, 'end_pos': 20, 'labels': [LOC (0.995)]}
 
-
-
-+++ (flair) time: 1.20530104637146
++++ (flair) time: 1.2204699516296387
 
 ------------ Caso 4 ------------
 text: enormously entertaining for moviegoers of any age .
+
 TRANSFORMERS: 
 
 
-+++ (transformer) time: 9.62852931022644
++++ (transformer) time: 9.314247369766235
 
 FLAIR: 
 
 
++++ (flair) time: 1.281895399093628
 
-+++ (flair) time: 1.3078105449676514
+------------ Caso 5 ------------
+text: Ford has some interesting cars.
+TRANSFORMERS: 
+
+{'word': 'Ford', 'score': 0.9995087385177612, 'entity': 'I-ORG', 'index': 1}
+
++++ (transformer) time: 9.48787236213684
+
+FLAIR: 
+
+{'text': 'Ford', 'start_pos': 0, 'end_pos': 4, 'labels': [ORG (0.9998)]}
+
++++ (flair) time: 1.36301851272583
