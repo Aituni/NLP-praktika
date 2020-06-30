@@ -1,2 +1,4 @@
 
-NER tutorial/__pycache__/
+NER_tutorial/__pycache__/
+MODEL_NER-eusk/trained_models/*
+CoNLL_NER/__pycache__/

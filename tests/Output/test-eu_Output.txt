@@ -1,0 +1,11 @@
+Tagger (flair): ../MODEL_NER-eusk/trained_models/from_pdf/best-model.pt
+
+FLAIR: 
+
+Gaur goizean , Iker <B-PER> Tolosarekin <E-PER> batera Tolosara <S-LOC> joan dira inauteriak ospatzera .
+
+
+FLAIR: 
+
+Atzo Kattalin <S-OTH> iphone bat erosi zun Apple <S-ORG> denda ofizialean .
+

@@ -1,0 +1,61 @@
+Tagger (flair): ner
+
+------------ Caso 0 ------------
+text: George Washington went to Washington .
+
+
+FLAIR: 
+
+{'text': 'George Washington', 'start_pos': 0, 'end_pos': 17, 'labels': [PER (0.9968)]}
+{'text': 'Washington', 'start_pos': 26, 'end_pos': 36, 'labels': [LOC (0.9994)]}
+
++++ (flair) time: 3.380361557006836
+
+------------ Caso 1 ------------
+text: George returned to Berlin to return his hat to the shop.
+
+
+FLAIR: 
+
+{'text': 'George', 'start_pos': 0, 'end_pos': 6, 'labels': [PER (1.0)]}
+{'text': 'Berlin', 'start_pos': 19, 'end_pos': 25, 'labels': [LOC (1.0)]}
+
++++ (flair) time: 1.43110990524292
+
+------------ Caso 2 ------------
+text: He had a look at different hats in Mora .
+
+
+FLAIR: 
+
+{'text': 'Mora', 'start_pos': 35, 'end_pos': 39, 'labels': [PER (0.9789)]}
+
++++ (flair) time: 1.215470314025879
+
+------------ Caso 3 ------------
+text: This is a sentence. This is another sentence. I love San Sebastian.
+
+
+FLAIR: 
+
+{'text': 'San Sebastian', 'start_pos': 7, 'end_pos': 20, 'labels': [LOC (0.995)]}
+
++++ (flair) time: 1.2570903301239014
+
+------------ Caso 4 ------------
+text: enormously entertaining for moviegoers of any age .
+
+
+FLAIR: 
+
+
++++ (flair) time: 1.3820433616638184
+
+------------ Caso 5 ------------
+text: Ford has some interesting cars.
+
+FLAIR: 
+
+{'text': 'Ford', 'start_pos': 0, 'end_pos': 4, 'labels': [ORG (0.9998)]}
+
++++ (flair) time: 1.3896682262420654

@@ -1,0 +1,36 @@
+
+Results (from_epub):
+- F1-score (micro) 0.8127
+- F1-score (macro) 0.6603
+
+By class:
+LOC        tp: 259 - fp: 42 - fn: 56 - precision: 0.8605 - recall: 0.8222 - f1-score: 0.8409
+ORG        tp: 211 - fp: 55 - fn: 82 - precision: 0.7932 - recall: 0.7201 - f1-score: 0.7549
+OTH        tp: 3 - fp: 3 - fn: 27 - precision: 0.5000 - recall: 0.1000 - f1-score: 0.1667
+PER        tp: 254 - fp: 31 - fn: 39 - precision: 0.8912 - recall: 0.8669 - f1-score: 0.8789
+
+
+Results(epub_drive):
+- F1-score (micro) 0.8222
+- F1-score (macro) 0.7069
+
+By class:
+LOC        tp: 261 - fp: 43 - fn: 54 - precision: 0.8586 - recall: 0.8286 - f1-score: 0.8433
+ORG        tp: 224 - fp: 64 - fn: 69 - precision: 0.7778 - recall: 0.7645 - f1-score: 0.7711
+OTH        tp: 7 - fp: 6 - fn: 23 - precision: 0.5385 - recall: 0.2333 - f1-score: 0.3256
+PER        tp: 257 - fp: 29 - fn: 36 - precision: 0.8986 - recall: 0.8771 - f1-score: 0.8877
+
+--------------------------------------------------------------------------------------------
+
+Results (from_pdf):
+- F1-score (micro) 0.8142
+- F1-score (macro) 0.6884
+
+By class:
+LOC        tp: 259 - fp: 51 - fn: 56 - precision: 0.8355 - recall: 0.8222 - f1-score: 0.8288
+ORG        tp: 214 - fp: 63 - fn: 79 - precision: 0.7726 - recall: 0.7304 - f1-score: 0.7509
+OTH        tp: 6 - fp: 8 - fn: 24 - precision: 0.4286 - recall: 0.2000 - f1-score: 0.2727
+PER        tp: 264 - fp: 29 - fn: 29 - precision: 0.9010 - recall: 0.9010 - f1-score: 0.9010
+
+
+
