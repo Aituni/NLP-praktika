@@ -1,4 +1,4 @@
-PATH = './trained_models/from_pdf/'
+PATH = './trained_models/from_epub/'
 
 from flair.visual.training_curves import Plotter
 plotter = Plotter()

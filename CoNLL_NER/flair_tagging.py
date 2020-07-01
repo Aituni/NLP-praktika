@@ -28,16 +28,30 @@ def tag_listSentences(text, clas_type, outfile):
 	tagger: SequenceTagger = SequenceTagger.load(clas_type)
 	tagger.predict(sentences)
 
-	print(sentences)
+
 	# iterate through sentences and outfile.write predicted labels
 	for sentence in sentences:
-		outfile.write(sentence.to_tagged_string()+"\n")
+		
+		taged_sent = sentence.to_tagged_string()
+		word_list = taged_sent.split(" ")
+		#print(word_list)
 
-	for sentence in sentences:
-		dictionary = sentence.to_dict(tag_type=clas_type) #imprimir las etiquetas añadidas con +info
-		for tag in dictionary.get('entities'):
-			outfile.write(str(tag['text'])+" "+str(tag['labels'])+"\n")
+		i=0
+		while i+1 < len(word_list):
+			act=word_list[i].strip('\n\t')
+			nextw=word_list[i+1].strip('\n\t')
+			if nextw[0] == '<': # is a tag
+				outfile.write(act+" "+nextw+"\n")
+				i+=1
+			else:
+				outfile.write(act+" O\n")
+			i+=1
 
+		lastw=word_list[-1]
+		if lastw: # hay alguna palabra
+			if lastw[0] != '<': # if last word is not a tag, print
+				lastw=lastw.strip('\n')# remove \n from the word
+				outfile.write(lastw+" O\n")
 
 	"""
 	Downloaded models:

@@ -1,12 +1,13 @@
 import flair_tagging as fl
 import transformer_tagging as tf
 
-IN_FILE = "../tests/Input/test-eu.txt"  # contain the sentences that we want to analyze.
-OUT_FILE = "../tests/Output/test-eu_Output.txt" # is the file where the results will be writed
+IN_FILE = "../tests/Input/CoNLL-eu.txt"  # contain the sentences that we want to analyze.
+OUT_FILE = "../tests/Output/CoNLL-eu_OUT.txt" # is the file where the results will be writed
 
 # put empty string ("") if you dont want to clasify with transformers.
-FLAIR_MODEL = '../MODEL_NER-eusk/trained_models/from_pdf/best-model.pt'
+FLAIR_MODEL = '../MODEL_NER-eusk/trained_models/from_epub/best-model.pt'
 TRANSFORMERS_MODEL = ''
+TAG_INFO = False
 
 
 """
@@ -27,11 +28,11 @@ def file_cases(tf_tagger, fl_tagger, tagger_info=True):
 		if fl_tagger:
 			outfile.write("Tagger (flair): "+fl_tagger+ "\n")
 
-	file.readline() #solo para pruebas
+	#file.readline() # this is for tests
 
 	while True:
 
-		file.readline() #solo para pruebas
+		#file.readline() # this is for tests
 
 		# Leemos el texto
 		text = file.readline()
@@ -39,14 +40,16 @@ def file_cases(tf_tagger, fl_tagger, tagger_info=True):
 			print ("\nEND.\n")
 			break
 
-		print("text: "+text)
+		#print("text: "+text)
 
 		if tf_tagger:
-			outfile.write("TRANSFORMERS: \n\n")
+			if tagger_info:
+				outfile.write("TRANSFORMERS: \n\n")
 			tf.tag_basic(text, tf_tagger, outfile)
 
 		if fl_tagger:
-			outfile.write("\nFLAIR: \n\n")
+			if tagger_info:
+				outfile.write("\nFLAIR: \n\n")
 			fl.tag_listSentences(text, fl_tagger, outfile)
 
 	file.close()
@@ -56,7 +59,7 @@ if "__main__" == __name__:
     
 	try:
 		outfile = open(OUT_FILE, "w")
-		file_cases(TRANSFORMERS_MODEL, FLAIR_MODEL, tagger_info=True) # tf, fl
+		file_cases(TRANSFORMERS_MODEL, FLAIR_MODEL, tagger_info=TAG_INFO) # tf, fl
 	finally:
 		outfile.close()
 
