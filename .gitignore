@@ -1,4 +1,4 @@
 
-NER_tutorial/__pycache__/
-MODEL_NER-eusk/trained_models/*
-CoNLL_NER/__pycache__/
+Tutorial/__pycache__/
+Models/trained_models/
+Tagger/__pycache__/
