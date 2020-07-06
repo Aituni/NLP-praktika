@@ -6,10 +6,11 @@ Each model's size is around 600MB. Too much for git repository. Use this link to
 https://drive.google.com/drive/folders/1JR_HsXVbD1nCnrHytpLc3bYkhIEbbBZM?usp=sharing
 
 The model ("best-model.pt") might be inside "/Models/trained_models/(ALG)/(TAG)/(LAN)/"
+
 Where:
-	(ALG) = Algorithm -> {'Flair', 'Transformer'}
-	(TAG) = Tagger -> {'ner', 'pos'}
-	(LAN) = Languague -> {'en', 'es', 'eu', 'ca', 'gl'}
+- (ALG) = Algorithm -> {'Flair', 'Transformer'}
+- (TAG) = Tagger -> {'ner', 'pos'}
+- (LAN) = Languague -> {'en', 'es', 'eu', 'ca', 'gl'}
 
 Results(ner_eu):
 - F1-score (micro) 0.8222
