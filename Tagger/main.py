@@ -1,9 +1,10 @@
 import flair_tagging as fl
 import transformer_tagging as tf
-import os.path
+import preparations as prep
 
-IN_FILE = "../tests/Input/CoNLL-eu.txt"  # contain the sentences that we want to analyze.
-OUT_FILE = "../tests/Output/CoNLL-eu_OUT" # is the file where the results will be writed. (if JSON = True, the file will be in 'json' format, else 'txt')
+IN_FILE = "../tests/Input/english_text.txt"  # contain the sentences that we want to analyze. DO WRITE FORMAT
+OUT_FILE = "../tests/Output/CoNLL-en_OUT" # is the file where the results will be writed. DO NOT WRITE FORMAT (.txt, ...)
+			#(if JSON = True, the file will be in 'json' format, else 'txt')
 
 """
 'F' = Flair 	'T' = Transformers 		'FT' = Both
@@ -15,15 +16,15 @@ ALGORITHM = 'F'
 
 TODO:		'ca' = catalan		'gl' = gallego
 """
-LANGUAGE = 'eu'
+LANGUAGE = 'en'
 
 """
-(manually) => insert full directory path or models official tagger name
+(manually) => insert full directory path or models official tagger name. In this case, use only one algorithm. 
 'ner' = Named Entity Recognition
 'pos' = Part Of Speech (only english and Spanish)
 TODO: 'chunk' = chunking  (only english)
 """
-TAGGER = 'ner'
+TAGGER = 'pos'
 
 """
 True = print more info for each word (NER, POS, Chunking) in json format.
@@ -32,11 +33,10 @@ False = print chosen tag in TAGGER in txt format.
 JSON = False
 
 """
-True = print info about the tagger
+True = print few info about the tagger
 False = Only print words and tags
 """
-TAG_INFO = False
-
+TAG_INFO = True
 
 """
 This function analyze the sentences of the IN_FILE, with transformers
@@ -56,31 +56,19 @@ def file_cases(tf_tagger, fl_tagger, tagger_info=True):
 		if fl_tagger:
 			outfile.write("Tagger (flair): "+fl_tagger+ "\n")
 
-	#file.readline() # this is for tests
+	# Leemos el texto
+	text = file.read()
 
-	while True:
+	if tf_tagger: #TODO:
+		if tagger_info:
+			outfile.write("TRANSFORMERS: \n\n")
+		tf.tag_basic(text, tf_tagger, outfile)
 
-		#file.readline() # this is for tests
-
-		# Leemos el texto
-		text = file.readline()
-		if text == "":
-			print ("\nEND.\n")
-			break
-
-		#print("text: "+text) # this is for tests
-
-		if tf_tagger:
-			if tagger_info:
-				outfile.write("TRANSFORMERS: \n\n")
-			tf.tag_basic(text, tf_tagger, outfile)
-
-		if fl_tagger:
-			if tagger_info:
-				outfile.write("\nFLAIR: \n\n")
-			sentences = fl.tag_listSentences(text, fl_tagger, outfile)
-			print_CoNLL(sentences)
-
+	if fl_tagger:
+		if tagger_info:
+			outfile.write("\nFLAIR: \n\n")
+		sentences = fl.tag_listSentences(text, fl_tagger)
+		print_CoNLL(sentences)
 	file.close()
 
 def print_CoNLL(sentences):
@@ -108,102 +96,27 @@ def print_CoNLL(sentences):
 				lastw=lastw.strip('\n')# remove \n from the word
 				outfile.write("{:<17}{:>8}\n".format(lastw, "O"))
 
-# Return 0 if the model is official or is downloaded in the correct path. 
-# Else return code[], a list with model specs.
-def clean_modelName(): 
-
-	code = [] # id del modelo
-	# first 	= algorithm (1-flair, 2-transformer, 3-both)
-	# second 	= tagger (1-ner, 2-pos, 3-chunk, 4-manually)
-	# third 	= language (1-eu, 2-es, 3-en, 4-ca, 5-gl)
-
-### ALGORITMO ### code[0]
-
-	if ALGORITHM == 'F':
-		# put empty string ("") if you dont want to clasify with that alorithm.
-		flair_model = '../Models/trained_models/Flair/eusk/from_epub/best-model.pt'
-		transformer_model = ''
-		code.append(1)
-	elif ALGORITHM == 'T':
-		# put empty string ("") if you dont want to clasify with that alorithm.
-		flair_model = ''
-		transformer_model = '../Models/trained_models/Transformer/'
-		code.append(2)
-	elif ALGORITHM == 'FT' or ALGORITHM == 'TF':
-		flair_model = '../Models/trained_models/Flair/'
-		transformer_model = '../Models/trained_models/Transformer/'
-		code.append(3)
-
-### TAGGER ### code[1]
-
-	if TAGGER == 'ner':
-		if flair_model:
-			flair_model = flair_model+'ner/'
-		if transformer_model:
-			transformer_model = transformer_model+'ner/'
-		code.append(1)
-
-	elif TAGGER == 'pos':
-		if flair_model:
-			flair_model = flair_model+'pos/'
-		if transformer_model:
-			transformer_model = transformer_model+'pos/'
-		code.append(2)
-
-	elif TAGGER == 'chunk':
-		#TODO
-		code.append(3)
-
-	else: # insertado manualmente el modelo concreto
-		if flair_model: # si se ha escogido flair
-			flair_model = TAGGER
-		if transformer_model: # si se ha escogido transformer
-			transformer_model = TAGGER
-		code.append(4)
-
-### IDIOMA ### code[2]
-	if LANGUAGE = 'eu':
-		code.append(1)
-	elif LANGUAGE = 'es':
-		code.append(2)
-	elif LANGUAGE = 'en':
-		code.append(3)
-	elif LANGUAGE = 'ca':
-		code.append(4)
-	elif LANGUAGE = 'ga':
-		code.append(5)
-
-	if flair_model:
-		flair_model = flair_model + LANGUAGE + '/best-model.pt'
-	if transformer_model:
-		transformer_model = transformer_model + LANGUAGE + '/best-model.pt'
-
-### MODELOS OFICIALES ###
-	if code[0]
-
-### COMPROBACION ###
-	fl = True
-	tf = True
-	if flair_model:
-		fl = os.path.isfile(flair_model)
-	if transformer_model:
-		tf = os.path.isfile(transformer_model)
-
-	if tf and fl: #los modelos a usar existen en las ubicaciones adecuadas
-		return 0
-	return code
-
-
-
 
 if "__main__" == __name__:
+	if JSON:
+		OUT_FILE = OUT_FILE + ".json"
+	else:
+		OUT_FILE = OUT_FILE + ".txt"
 
-    clean_modelName()
-	try:
-		outfile = open(OUT_FILE, "w")
-		file_cases(transformer_model, flair_model, tagger_info=TAG_INFO) # tf, fl
-	finally:
-		outfile.close()
+	code, FLAIR_MODEL, TRANSFORMERS_MODEL = prep.clean_modelName(ALGORITHM, TAGGER, LANGUAGE)
+	if code == -1:
+		print("Error with selected parameter.")
+		#END
+	else:
+		if code != 0:# model not found
+			prep.download(code, FLAIR_MODEL, TRANSFORMERS_MODEL)#download model if is accesible
+
+		try:
+			outfile = open(OUT_FILE, "w")
+			file_cases(TRANSFORMERS_MODEL, FLAIR_MODEL, tagger_info=TAG_INFO) # tf, fl
+		finally:
+			outfile.close()
+			print ("\nEND.\n")
 
 	"""
 	Some interesting models (flair):

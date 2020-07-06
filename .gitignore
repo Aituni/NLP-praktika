@@ -1,4 +1,5 @@
 
 Tutorial/__pycache__/
-Models/trained_models/
+Models/trained_models/Flair/ner/eu/best-model.pt
+Models/trained_models/Flair/ner/eu/final-model.pt
 Tagger/__pycache__/
