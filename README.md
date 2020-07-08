@@ -9,7 +9,7 @@ The model ("best-model.pt") must be inside an specific folder. The path of that 
 
 Where:
 - (ALG) = Algorithm -> {'Flair', 'Transformer'}
-- (TAG) = Tagger -> {'ner', 'pos'}
+- (TAG) = Tagger -> {'ner', 'pos', 'chunk'}
 - (LAN) = Languague -> {'en', 'es', 'eu', 'ca', 'gl'}
 
 Results(ner_eu):

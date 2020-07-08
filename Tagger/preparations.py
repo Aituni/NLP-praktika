@@ -6,9 +6,9 @@ import requests
 def clean_modelName(algorithm, tagger, language): 
 
 	code = [] # id del modelo
-	# first 	= algorithm (1-flair, 2-transformer, 3-both)
-	# second 	= tagger (1-ner, 2-pos, 3-chunk, 4-manually)
-	# third 	= language (1-eu, 2-es, 3-en, 4-ca, 5-gl)
+	# 0. = algorithm (1-flair, 2-transformer, 3-both)
+	# 1. = tagger (1-ner, 2-pos, 3-chunk, 4-manually)
+	# 2. = language (1-eu, 2-es, 3-en, 4-ca, 5-gl)
 
 	### ALGORITMO ### code[0]
 
@@ -44,17 +44,16 @@ def clean_modelName(algorithm, tagger, language):
 		code.append(2)
 
 	elif tagger == 'chunk':
-		#TODO
+		if fl_path:
+			fl_path = fl_path+'chunk/'
+		if tf_path:
+			tf_path = tf_path+'chunk/'
 		code.append(3)
 
 	else: # insertado manualmente el modelo concreto
 		if algorithm == 'FT' or algorithm == 'TF':
 			print("Please, choose only one algorithm for manual models.")
 			return -1, "", ""
-		if fl_path: # si se ha escogido flair
-			fl_path = tagger
-		if tf_path: # si se ha escogido transformer
-			tf_path = tagger
 		code.append(4)
 
 	### IDIOMA ### code[2]
@@ -69,6 +68,9 @@ def clean_modelName(algorithm, tagger, language):
 		code.append(4)
 	elif language == 'ga':
 		code.append(5)
+	else:
+		print("Please, choose one valid language.")
+		return -1, "", ""
 
 	if fl_path:
 		fl_path = fl_path + language + '/best-model.pt'
@@ -76,9 +78,9 @@ def clean_modelName(algorithm, tagger, language):
 		tf_path = tf_path + language + '/best-model.pt'
 
 	### MODELOS OFICIALES ###
-	# first 	= algorithm (1-flair, 2-transformer, 3-both)
-	# second 	= tagger (1-ner, 2-pos, 3-chunk, 4-manually)
-	# third 	= language (1-eu, 2-es, 3-en, 4-ca, 5-gl)
+	# 0. = algorithm (1-flair, 2-transformer, 3-both)
+	# 1. = tagger (1-ner, 2-pos, 3-chunk, 4-manually)
+	# 2. = language (1-eu, 2-es, 3-en, 4-ca, 5-gl)
 
 	official = False
 
@@ -91,12 +93,19 @@ def clean_modelName(algorithm, tagger, language):
 			if code[2] == 3 or code[2] == 2: #es - en
 				fl_path = 'pos-multi'
 				official = True
+		if code[1] == 3:#chunk
+			if code[2] == 3:#en
+				fl_path = 'chunk'
+				official = True
 	if code[0]%2 == 0: #transformer
 		if code[1] == 1:#ner
 			if code[2] == 3:#en
 				tf_path = 'ner'
 				official = True
 
+	### MANUAL - Full path ###
+	if code[1] == 3:# MANUAL
+		fl_path = tagger
 	### COMPROBACION ###
 	fl = True
 	tf = True

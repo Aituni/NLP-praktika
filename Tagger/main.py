@@ -20,14 +20,14 @@ LANGUAGE = 'en'
 """
 (manually) => insert full directory path or models official tagger name. In this case, use only one algorithm. 
 'ner' = Named Entity Recognition
-'pos' = Part Of Speech (only english and Spanish)
-TODO: 'chunk' = chunking  (only english)
+'pos-multi' = Part Of Speech (only English and Spanish)
+'chunk' = chunking  (only English)
 """
-TAGGER = 'pos'
+TAGGER = 'ner'
 
 """
 True = print more info for each word (NER, POS, Chunking) in json format. ('only en')
-False = print chosen tag in TAGGER in txt format.
+False = print chosen tag in TAGGER in txt format, CoNLL style.
 """
 JSON = True
 
@@ -68,10 +68,10 @@ def file_cases(tf_tagger, fl_tagger, tagger_info=True):
 			outfile.write("\nFLAIR: \n\n")
 		if JSON:
 			results=[]
-			taggers=['ner', 'pos']
+			taggers=['ner', 'pos', 'chunk']
 			results.append(fl.tag_listSentences(text, 'ner'))
 			results.append(fl.tag_listSentences(text, 'pos'))
-			#TODO: chunking
+			results.append(fl.tag_listSentences(text, 'chunk'))
 			print_json(results, taggers)
 		else:
 			sentences = fl.tag_listSentences(text, fl_tagger)
