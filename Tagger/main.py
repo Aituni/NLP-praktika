@@ -63,14 +63,16 @@ def file_cases(tf_tagger, fl_tagger, tagger_info=True):
 			outfile.write("TRANSFORMERS: \n\n")
 		tf.tag_basic(text, tf_tagger, outfile)
 
-	if fl_tagger:
+	if fl_tagger:# with flair
 		if tagger_info:
 			outfile.write("\nFLAIR: \n\n")
 		if JSON:
-			sentences_ner = fl.tag_listSentences(text, 'ner')
-			sentences_pos = fl.tag_listSentences(text, 'pos')
+			results=[]
+			taggers=['ner', 'pos']
+			results.append(fl.tag_listSentences(text, 'ner'))
+			results.append(fl.tag_listSentences(text, 'pos'))
 			#TODO: chunking
-			print_json(sentences_ner, sentences_pos)
+			print_json(results, taggers)
 		else:
 			sentences = fl.tag_listSentences(text, fl_tagger)
 			print_CoNLL(sentences, fl_tagger)
@@ -114,14 +116,12 @@ def getWordDictList(dictList, word_list, tagger):
 	return dictList
 
 def print_CoNLL(sentences, tagger):
-	dictList = []
 	# iterate through sentences and outfile.write predicted labels
 	for sentence in sentences:
-		
+		dictList = []
 		tagged_sent = sentence.to_tagged_string()
 		tagged_sent = tagged_sent.strip('\n\t')
 		word_list = tagged_sent.split(" ")
-		#print(word_list)
 		dictList = getWordDictList(dictList, word_list, tagger)
 
 		for word_dict in dictList:
@@ -129,28 +129,23 @@ def print_CoNLL(sentences, tagger):
 			tag = word_dict[tagger+'_label']
 			outfile.write("{:<17}{:>8}\n".format(text, tag))	
 
-def print_json(sentences_ner, sentences_pos):
+def print_json(sentences_listOfModels, taggers):
 	word_dict = {}
 	
 	# iterate through sentences and outfile.write predicted labels
-	for i in range(len(sentences_ner)):
+	# every model have the same sentences, same words, different tags
+	for i in range(len(sentences_listOfModels[0])):#for sentence
 		dictList = []
-		ner_s = sentences_ner[i]
-		pos_s = sentences_pos[i]
-	
-		ner_tagged_sent = ner_s.to_tagged_string()
-		pos_tagged_sent = pos_s.to_tagged_string()
+		for model in range(len(taggers)):# for model
 
-		ner_tagged_sent = ner_tagged_sent.strip('\n\t')#limpiar saltos de linea y tabs
-		pos_tagged_sent = pos_tagged_sent.strip('\n\t')
-
-		ner_word_list = ner_tagged_sent.split(" ")
-		pos_word_list = pos_tagged_sent.split(" ")
-		
-		# son las mismas frases por lo que el numero de palabras son las mismas. solo varian las etiquetas
-		# cada diccionario corresponde a una palabra
-		dictList = getWordDictList(dictList, ner_word_list, 'NER')
-		dictList = getWordDictList(dictList, pos_word_list, 'POS')
+			model_sentences = sentences_listOfModels[model]#modelo "model"
+			sentence = model_sentences[i]#sentencia i-esima
+			tagged_sent = sentence.to_tagged_string()
+			tagged_sent = tagged_sent.strip('\n\t')#limpiar saltos de linea y tabs
+			word_list = tagged_sent.split(" ")
+			# son las mismas frases por lo que el numero de palabras son las mismas. solo varian las etiquetas
+			# cada diccionario corresponde a una palabra
+			dictList = getWordDictList(dictList, word_list, taggers[model])
 
 		for word_dict in dictList:
 			outfile.write(json.dumps(word_dict, indent = 4, sort_keys=True))
