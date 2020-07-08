@@ -1,9 +1,10 @@
 import flair_tagging as fl
 import transformer_tagging as tf
 import preparations as prep
+import json
 
 IN_FILE = "../tests/Input/english_text.txt"  # contain the sentences that we want to analyze. DO WRITE FORMAT
-OUT_FILE = "../tests/Output/CoNLL-en_OUT" # is the file where the results will be writed. DO NOT WRITE FORMAT (.txt, ...)
+OUT_FILE = "../tests/Output/json-en_OUT" # is the file where the results will be writed. DO NOT WRITE FORMAT (.txt, ...)
 			#(if JSON = True, the file will be in 'json' format, else 'txt')
 
 """
@@ -27,13 +28,13 @@ TODO: 'chunk' = chunking  (only english)
 TAGGER = 'pos'
 
 """
-True = print more info for each word (NER, POS, Chunking) in json format.
+True = print more info for each word (NER, POS, Chunking) in json format. ('only en')
 False = print chosen tag in TAGGER in txt format.
 """
-JSON = False
+JSON = True
 
 """
-True = print few info about the tagger
+True = print few info about the tagger (ONLY WITH JSON = False)
 False = Only print words and tags
 """
 TAG_INFO = True
@@ -67,8 +68,14 @@ def file_cases(tf_tagger, fl_tagger, tagger_info=True):
 	if fl_tagger:
 		if tagger_info:
 			outfile.write("\nFLAIR: \n\n")
-		sentences = fl.tag_listSentences(text, fl_tagger)
-		print_CoNLL(sentences)
+		if JSON:
+			sentences_ner = fl.tag_listSentences(text, 'ner')
+			sentences_pos = fl.tag_listSentences(text, 'pos')
+			#TODO: chunking
+			print_json(sentences_ner, sentences_pos)
+		else:
+			sentences = fl.tag_listSentences(text, fl_tagger)
+			print_CoNLL(sentences)
 	file.close()
 
 def print_CoNLL(sentences):
@@ -83,7 +90,7 @@ def print_CoNLL(sentences):
 		while i+1 < len(word_list):
 			act=word_list[i].strip('\n\t')
 			nextw=word_list[i+1].strip('\n\t')
-			if nextw[0] == '<': # is a tag
+			if isTag(nextw[0]): # is a tag
 				outfile.write("{:<17}{:>8}\n".format(act, nextw))
 				i+=1
 			else:
@@ -95,11 +102,71 @@ def print_CoNLL(sentences):
 			if lastw[0] != '<': # if last word is not a tag, print
 				lastw=lastw.strip('\n')# remove \n from the word
 				outfile.write("{:<17}{:>8}\n".format(lastw, "O"))
+def isTag(word):
+	return word[0] == '<'
+def print_json(sentences_ner, sentences_pos):
+	word_dict = {}
+	# iterate through sentences and outfile.write predicted labels
+	for i in range(len(sentences_ner)):
+		ner_s = sentences_ner[i]
+		pos_s = sentences_pos[i]
+	
+		ner_tagged_sent = ner_s.to_tagged_string()
+		pos_tagged_sent = pos_s.to_tagged_string()
+
+		ner_word_list = ner_tagged_sent.split(" ")
+		pos_word_list = pos_tagged_sent.split(" ")
+		#print(word_list)
+
+		i=0
+		j=0
+		#son las mismas frases por lo que el numero de palabras son las mismas. solo varian las etiquetas
+		while (i+1 < len(ner_word_list)) and (j+1 < len(pos_word_list)):# for each word
+			ner_act = ner_word_list[i].strip('\n\t')#limpiar saltos de linea y tabs
+			pos_act = pos_word_list[j].strip('\n\t')
+			if ner_act != pos_act:
+				print("WARNING no match")
+				print(pos_act)
+				print(ner_act)
+
+			ner_nextw = ner_word_list[i+1].strip('\n\t')
+			pos_nextw = pos_word_list[j+1].strip('\n\t')
+
+			word_dict['text'] = ner_act
+
+			if isTag(ner_nextw[0]): 
+				word_dict['NER_label'] = ner_nextw
+				i+=1
+			else:
+				word_dict['NER_label'] = "O"
+
+			if isTag(pos_nextw[0]): # is a tag
+				word_dict['POS_label'] = pos_nextw
+				j+=1
+			else:
+				word_dict['POS_label'] = "O"
+
+			outfile.write(json.dumps(word_dict, indent = 4, sort_keys=True))
+			i+=1
+			j+=1
+
+		ner_lastw = ner_word_list[-1]
+		pos_lastw = pos_word_list[-1]
+		if ner_lastw: # hay alguna palabra
+			if not isTag(ner_lastw[0]): # if last word is not a tag, print
+				ner_lastw = ner_lastw.strip('\n')# remove \n from the word
+				word_dict['text'] = ner_lastw
+				word_dict['NER_label'] = "O"
+			if not isTag(pos_lastw[0]): # if last word is not a tag, print
+				word_dict['POS_label'] = "O"
+			outfile.write(json.dumps(word_dict, indent = 4, sort_keys=True))
+
 
 
 if "__main__" == __name__:
 	if JSON:
 		OUT_FILE = OUT_FILE + ".json"
+		TAG_INFO = False
 	else:
 		OUT_FILE = OUT_FILE + ".txt"
 
