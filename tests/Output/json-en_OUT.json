@@ -1,229 +1,286 @@
 {
-    "NER_label": "<B-PER>",
-    "POS_label": "<NNP>",
+    "chunk_label": "<B-NP>",
+    "ner_label": "<B-PER>",
+    "pos_label": "<NNP>",
     "text": "George"
 }{
-    "NER_label": "<E-PER>",
-    "POS_label": "<NNP>",
+    "chunk_label": "<E-NP>",
+    "ner_label": "<E-PER>",
+    "pos_label": "<NNP>",
     "text": "Washington"
 }{
-    "NER_label": "O",
-    "POS_label": "<VBD>",
+    "chunk_label": "<S-VP>",
+    "ner_label": "O",
+    "pos_label": "<VBD>",
     "text": "went"
 }{
-    "NER_label": "O",
-    "POS_label": "<IN>",
+    "chunk_label": "<S-PP>",
+    "ner_label": "O",
+    "pos_label": "<IN>",
     "text": "to"
 }{
-    "NER_label": "<S-LOC>",
-    "POS_label": "<NNP>",
+    "chunk_label": "<S-NP>",
+    "ner_label": "<S-LOC>",
+    "pos_label": "<NNP>",
     "text": "Washington"
 }{
-    "NER_label": "O",
-    "POS_label": "<NNP>",
+    "chunk_label": "O",
+    "ner_label": "O",
+    "pos_label": "<.>",
     "text": "."
 }{
-    "NER_label": "<S-PER>",
-    "POS_label": "<NNP>",
+    "chunk_label": "<S-NP>",
+    "ner_label": "<S-PER>",
+    "pos_label": "<NNP>",
     "text": "George"
 }{
-    "NER_label": "O",
-    "POS_label": "<VBD>",
+    "chunk_label": "<S-VP>",
+    "ner_label": "O",
+    "pos_label": "<VBD>",
     "text": "returned"
 }{
-    "NER_label": "O",
-    "POS_label": "<IN>",
+    "chunk_label": "<S-PP>",
+    "ner_label": "O",
+    "pos_label": "<IN>",
     "text": "to"
 }{
-    "NER_label": "<S-LOC>",
-    "POS_label": "<NNP>",
+    "chunk_label": "<S-NP>",
+    "ner_label": "<S-LOC>",
+    "pos_label": "<NNP>",
     "text": "Berlin"
 }{
-    "NER_label": "O",
-    "POS_label": "<TO>",
+    "chunk_label": "<B-VP>",
+    "ner_label": "O",
+    "pos_label": "<TO>",
     "text": "to"
 }{
-    "NER_label": "O",
-    "POS_label": "<VB>",
+    "chunk_label": "<E-VP>",
+    "ner_label": "O",
+    "pos_label": "<VB>",
     "text": "return"
 }{
-    "NER_label": "O",
-    "POS_label": "<PRP$>",
+    "chunk_label": "<B-NP>",
+    "ner_label": "O",
+    "pos_label": "<PRP$>",
     "text": "his"
 }{
-    "NER_label": "O",
-    "POS_label": "<NN>",
+    "chunk_label": "<E-NP>",
+    "ner_label": "O",
+    "pos_label": "<NN>",
     "text": "hat"
 }{
-    "NER_label": "O",
-    "POS_label": "<IN>",
+    "chunk_label": "<S-PP>",
+    "ner_label": "O",
+    "pos_label": "<IN>",
     "text": "to"
 }{
-    "NER_label": "O",
-    "POS_label": "<DT>",
+    "chunk_label": "<B-NP>",
+    "ner_label": "O",
+    "pos_label": "<DT>",
     "text": "the"
 }{
-    "NER_label": "O",
-    "POS_label": "<NN>",
+    "chunk_label": "<E-NP>",
+    "ner_label": "O",
+    "pos_label": "<NN>",
     "text": "shop"
 }{
-    "NER_label": "O",
-    "POS_label": "<NN>",
+    "chunk_label": "O",
+    "ner_label": "O",
+    "pos_label": "<.>",
     "text": "."
 }{
-    "NER_label": "O",
-    "POS_label": "<PRP>",
+    "chunk_label": "<S-NP>",
+    "ner_label": "O",
+    "pos_label": "<PRP>",
     "text": "He"
 }{
-    "NER_label": "O",
-    "POS_label": "<VBD>",
+    "chunk_label": "<S-VP>",
+    "ner_label": "O",
+    "pos_label": "<VBD>",
     "text": "had"
 }{
-    "NER_label": "O",
-    "POS_label": "<DT>",
+    "chunk_label": "<B-NP>",
+    "ner_label": "O",
+    "pos_label": "<DT>",
     "text": "a"
 }{
-    "NER_label": "O",
-    "POS_label": "<NN>",
+    "chunk_label": "<E-NP>",
+    "ner_label": "O",
+    "pos_label": "<NN>",
     "text": "look"
 }{
-    "NER_label": "O",
-    "POS_label": "<IN>",
+    "chunk_label": "<S-PP>",
+    "ner_label": "O",
+    "pos_label": "<IN>",
     "text": "at"
 }{
-    "NER_label": "O",
-    "POS_label": "<JJ>",
+    "chunk_label": "<B-NP>",
+    "ner_label": "O",
+    "pos_label": "<JJ>",
     "text": "different"
 }{
-    "NER_label": "O",
-    "POS_label": "<NNS>",
+    "chunk_label": "<E-NP>",
+    "ner_label": "O",
+    "pos_label": "<NNS>",
     "text": "hats"
 }{
-    "NER_label": "O",
-    "POS_label": "<IN>",
+    "chunk_label": "<S-PP>",
+    "ner_label": "O",
+    "pos_label": "<IN>",
     "text": "in"
 }{
-    "NER_label": "<S-PER>",
-    "POS_label": "<NNP>",
+    "chunk_label": "<S-NP>",
+    "ner_label": "<S-PER>",
+    "pos_label": "<NNP>",
     "text": "Mora"
 }{
-    "NER_label": "O",
-    "POS_label": "<NNP>",
+    "chunk_label": "O",
+    "ner_label": "O",
+    "pos_label": "<.>",
     "text": "."
 }{
-    "NER_label": "O",
-    "POS_label": "<DT>",
+    "chunk_label": "<S-NP>",
+    "ner_label": "O",
+    "pos_label": "<DT>",
     "text": "This"
 }{
-    "NER_label": "O",
-    "POS_label": "<VBZ>",
+    "chunk_label": "<S-VP>",
+    "ner_label": "O",
+    "pos_label": "<VBZ>",
     "text": "is"
 }{
-    "NER_label": "O",
-    "POS_label": "<DT>",
+    "chunk_label": "<B-NP>",
+    "ner_label": "O",
+    "pos_label": "<DT>",
     "text": "a"
 }{
-    "NER_label": "O",
-    "POS_label": "<NN>",
+    "chunk_label": "<E-NP>",
+    "ner_label": "O",
+    "pos_label": "<NN>",
     "text": "sentence"
 }{
-    "NER_label": "O",
-    "POS_label": "<NN>",
+    "chunk_label": "O",
+    "ner_label": "O",
+    "pos_label": "<.>",
     "text": "."
 }{
-    "NER_label": "O",
-    "POS_label": "<DT>",
+    "chunk_label": "<S-NP>",
+    "ner_label": "O",
+    "pos_label": "<DT>",
     "text": "This"
 }{
-    "NER_label": "O",
-    "POS_label": "<VBZ>",
+    "chunk_label": "<S-VP>",
+    "ner_label": "O",
+    "pos_label": "<VBZ>",
     "text": "is"
 }{
-    "NER_label": "O",
-    "POS_label": "<DT>",
+    "chunk_label": "<B-NP>",
+    "ner_label": "O",
+    "pos_label": "<DT>",
     "text": "another"
 }{
-    "NER_label": "O",
-    "POS_label": "<NN>",
+    "chunk_label": "<E-NP>",
+    "ner_label": "O",
+    "pos_label": "<NN>",
     "text": "sentence"
 }{
-    "NER_label": "O",
-    "POS_label": "<NN>",
+    "chunk_label": "O",
+    "ner_label": "O",
+    "pos_label": "<.>",
     "text": "."
 }{
-    "NER_label": "O",
-    "POS_label": "<PRP>",
+    "chunk_label": "<S-NP>",
+    "ner_label": "O",
+    "pos_label": "<PRP>",
     "text": "I"
 }{
-    "NER_label": "O",
-    "POS_label": "<VBP>",
+    "chunk_label": "<S-VP>",
+    "ner_label": "O",
+    "pos_label": "<VBP>",
     "text": "love"
 }{
-    "NER_label": "<B-LOC>",
-    "POS_label": "<NNP>",
+    "chunk_label": "<B-NP>",
+    "ner_label": "<B-LOC>",
+    "pos_label": "<NNP>",
     "text": "San"
 }{
-    "NER_label": "<E-LOC>",
-    "POS_label": "<NNP>",
+    "chunk_label": "<E-NP>",
+    "ner_label": "<E-LOC>",
+    "pos_label": "<NNP>",
     "text": "Sebastian"
 }{
-    "NER_label": "O",
-    "POS_label": "<NNP>",
+    "chunk_label": "O",
+    "ner_label": "O",
+    "pos_label": "<.>",
     "text": "."
 }{
-    "NER_label": "O",
-    "POS_label": "<RB>",
+    "chunk_label": "<B-ADJP>",
+    "ner_label": "O",
+    "pos_label": "<RB>",
     "text": "enormously"
 }{
-    "NER_label": "O",
-    "POS_label": "<JJ>",
+    "chunk_label": "<E-ADJP>",
+    "ner_label": "O",
+    "pos_label": "<JJ>",
     "text": "entertaining"
 }{
-    "NER_label": "O",
-    "POS_label": "<IN>",
+    "chunk_label": "<S-PP>",
+    "ner_label": "O",
+    "pos_label": "<IN>",
     "text": "for"
 }{
-    "NER_label": "O",
-    "POS_label": "<NNS>",
+    "chunk_label": "<S-NP>",
+    "ner_label": "O",
+    "pos_label": "<NNS>",
     "text": "moviegoers"
 }{
-    "NER_label": "O",
-    "POS_label": "<IN>",
+    "chunk_label": "<S-PP>",
+    "ner_label": "O",
+    "pos_label": "<IN>",
     "text": "of"
 }{
-    "NER_label": "O",
-    "POS_label": "<DT>",
+    "chunk_label": "<B-NP>",
+    "ner_label": "O",
+    "pos_label": "<DT>",
     "text": "any"
 }{
-    "NER_label": "O",
-    "POS_label": "<NN>",
+    "chunk_label": "<E-NP>",
+    "ner_label": "O",
+    "pos_label": "<NN>",
     "text": "age"
 }{
-    "NER_label": "O",
-    "POS_label": "<NN>",
+    "chunk_label": "O",
+    "ner_label": "O",
+    "pos_label": "<.>",
     "text": "."
 }{
-    "NER_label": "<S-ORG>",
-    "POS_label": "<NNP>",
+    "chunk_label": "<S-NP>",
+    "ner_label": "<S-ORG>",
+    "pos_label": "<NNP>",
     "text": "Ford"
 }{
-    "NER_label": "O",
-    "POS_label": "<VBZ>",
+    "chunk_label": "<S-VP>",
+    "ner_label": "O",
+    "pos_label": "<VBZ>",
     "text": "has"
 }{
-    "NER_label": "O",
-    "POS_label": "<DT>",
+    "chunk_label": "<B-NP>",
+    "ner_label": "O",
+    "pos_label": "<DT>",
     "text": "some"
 }{
-    "NER_label": "O",
-    "POS_label": "<JJ>",
+    "chunk_label": "<I-NP>",
+    "ner_label": "O",
+    "pos_label": "<JJ>",
     "text": "interesting"
 }{
-    "NER_label": "O",
-    "POS_label": "<NNS>",
+    "chunk_label": "<E-NP>",
+    "ner_label": "O",
+    "pos_label": "<NNS>",
     "text": "cars"
 }{
-    "NER_label": "O",
-    "POS_label": "<NNS>",
+    "chunk_label": "O",
+    "ner_label": "O",
+    "pos_label": "<.>",
     "text": "."
 }

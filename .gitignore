@@ -1,7 +1,6 @@
 
 Tutorial/__pycache__/
-Models/trained_models/Flair/ner/eu/best-model.pt
-Models/trained_models/Flair/ner/eu/final-model.pt
+Models/trained_models/
 Tagger/__pycache__/
 tests/Input/1.txt
 tests/Output/1.txt

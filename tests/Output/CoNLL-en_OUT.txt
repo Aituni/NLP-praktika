@@ -1,61 +1,61 @@
-Tagger (flair): pos-multi
+Tagger (flair): ner
 
 FLAIR: 
 
-George            <PROPN>
-Washington        <PROPN>
-went               <VERB>
-to                  <ADP>
-Washington        <PROPN>
-.                 <PUNCT>
-George            <PROPN>
-returned           <VERB>
-to                  <ADP>
-Berlin            <PROPN>
-to                 <PART>
-return             <VERB>
-his                <PRON>
-hat                <NOUN>
-to                  <ADP>
-the                 <DET>
-shop               <NOUN>
-.                 <PUNCT>
-He                 <PRON>
-had                <VERB>
-a                   <DET>
-look               <NOUN>
-at                  <ADP>
-different           <ADJ>
-hats               <NOUN>
-in                  <ADP>
-Mora              <PROPN>
-.                 <PUNCT>
-This               <PRON>
-is                  <AUX>
-a                   <DET>
-sentence           <NOUN>
-.                 <PUNCT>
-This               <PRON>
-is                  <AUX>
-another             <DET>
-sentence           <NOUN>
-.                 <PUNCT>
-I                  <PRON>
-love               <VERB>
-San               <PROPN>
-Sebastian         <PROPN>
-.                 <PUNCT>
-enormously          <ADV>
-entertaining        <ADJ>
-for                 <ADP>
-moviegoers         <NOUN>
-of                  <ADP>
-any                 <DET>
-age                <NOUN>
-.                 <PUNCT>
-Ford              <PROPN>
-has                <VERB>
-some                <DET>
-interesting         <ADJ>
-cars               <NOUN>
-.                 <PUNCT>
+            George  <B-PER> 
+        Washington  <E-PER> 
+              went  O       
+                to  O       
+        Washington  <S-LOC> 
+                 .  O       
+            George  <S-PER> 
+          returned  O       
+                to  O       
+            Berlin  <S-LOC> 
+                to  O       
+            return  O       
+               his  O       
+               hat  O       
+                to  O       
+               the  O       
+              shop  O       
+                 .  O       
+                He  O       
+               had  O       
+                 a  O       
+              look  O       
+                at  O       
+         different  O       
+              hats  O       
+                in  O       
+              Mora  <S-PER> 
+                 .  O       
+              This  O       
+                is  O       
+                 a  O       
+          sentence  O       
+                 .  O       
+              This  O       
+                is  O       
+           another  O       
+          sentence  O       
+                 .  O       
+                 I  O       
+              love  O       
+               San  <B-LOC> 
+         Sebastian  <E-LOC> 
+                 .  O       
+        enormously  O       
+      entertaining  O       
+               for  O       
+        moviegoers  O       
+                of  O       
+               any  O       
+               age  O       
+                 .  O       
+              Ford  <S-ORG> 
+               has  O       
+              some  O       
+       interesting  O       
+              cars  O       
+                 .  O       
