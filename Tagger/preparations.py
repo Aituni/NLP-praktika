@@ -237,9 +237,9 @@ def download(code, fl_path, tf_path):
 	if r.status_code == 200:#OK
 		print("downloading model...\n")
 		if code[0]%2 == 1: #flair
-			outfile=open( fl_path + filename, "wb" )
+			outfile=open( fl_path + "/" + filename, "wb" )
 		if code[0] == 2 or code[0] == 3: #transformer
-			outfile=open( tf_path + filename, "wb" )
+			outfile=open( tf_path + "/" +  filename, "wb" )
 
 		outfile.write(r.content)
 		outfile.close()
