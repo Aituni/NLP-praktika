@@ -17,11 +17,12 @@ def obtain_model(algorithm, tagger, language):
 		return code, fl_path, tf_path
 	make_dirs(fl_path, tf_path)
 
+
 	### file ###
 	code, fl_path, tf_path = official_or_manual_models(code, fl_path, tf_path, tagger)
-	if code[0] != 0:
-		code, fl_path, tf_path = obtain_FilePath(code, fl_path, tf_path)
-		if code[0] != 0: # file not found
+	if code[0] != 0:# not found official or manual path
+		code, fl_path, tf_path = obtain_FilePath(code, fl_path, tf_path) # get local model, on the path
+		if code[0] != 0: # file not found locally
 			download(code, fl_path, tf_path)#download model if is accesible
 
 	return code, fl_path, tf_path
@@ -178,7 +179,7 @@ def official_or_manual_models(code, fl_path, tf_path, tagger):
 	### MANUAL - Full path ###
 
 	# en este modo solo se utiliza un algoritmo, flair o transformer
-	if code[1] == 3:# MANUAL
+	if code[1] == 4:# MANUAL
 		fl_path = tagger
 		tf_path = tagger
 		modified = True

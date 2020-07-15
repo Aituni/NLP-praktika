@@ -272,11 +272,11 @@ if "__main__" == __name__:
 
 	# Edit parameters here, save and execute this file
 	main(	
-		in_filename = 'english_text.txt', # do write format
-		out_filename = 'CoNLL-en_OUT', 	  # do NOT write format
+		in_filename = 'eusk_text.txt', # do write format
+		out_filename = 'chunk_eu', 	  # do NOT write format
 		algorithm = 'F',	 #	'F' = Flair(Recommended) 	'T' = Transformers (experimental) 		'FT' = Both (experimental)
-		language = 'en',	#  'eu' = euskera		'es' = español		'en' = english		'ca' = catalan		'gl' = gallego
-		tagger = 'ner',		# 'ner'= (all languages)		'pos' = (only English and Spanish)		'chunk' = (only English)
+		language = 'eu',	#  'eu' = euskera		'es' = español		'en' = english		'ca' = catalan		'gl' = gallego
+		tagger = 'chunk',		# 'ner'= (all languages)		'pos' = (only English and Spanish)		'chunk' = (only English)
 		json = False,	# outfile format.
 		tag_info = True)  # info about tagger
 
@@ -285,7 +285,7 @@ if "__main__" == __name__:
 
 	"""
 	----------------------------------------------------------------------------------------------------------------------
-	For text classification is needed other functions. Actually does not work with this script. Only text tagging works 
+	For text classification is needed other functions. At the moment does not work with this script. Only text tagging works 
 	(for example: 'ner', 'pos' or 'pos-multi')
 
 	Some interesting models (flair):

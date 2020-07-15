@@ -17,11 +17,18 @@ Results(ner_eu):
 - F1-score (micro) 0.8222
 - F1-score (macro) 0.7069
 
+Results(chunk_eu):
+- F1-score (micro) 0.9412
+- F1-score (macro) 0.6315
+
 # Uso
 
 Añadir los parametros deseados en Tagger/main.py, a la llamada de la función main(...) que se encuentra en la parte inferior del archivo, guardar los cambios y ejecutar este mismo archivo.
 
-Comando de ejecución: $python main.py
+Comando de ejecución: 
+```sh
+	$ python main.py
+```
 
 Por defecto el directorio para el documento de entrada es: "../tests/Input/" 
 Por defecto el directorio para el documento de salida, donde se guardaran los resultados es: "../tests/Output/" 
