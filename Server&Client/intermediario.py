@@ -1,5 +1,6 @@
 class Command:
-	File, Size, Parameters, Quantity = ("FLE", "SZE", "PRM", "QTY")
+	File, Size, Parameters, Quantity, Close, Options = ("FLE", "SZE", "PRM", "QTY", "CLS", "OPT")
+	port = 50013
 
 #devuelve el paquete recibido con el comando y sin la marca de fin.
 def recvline( s, removeEOL = True ):

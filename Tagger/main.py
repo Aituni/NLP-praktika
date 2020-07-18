@@ -263,7 +263,7 @@ def main(
 		finally:
 			outFile.close()
 			inFile.close()
-			print ("\nEND.\n")
+			print ("\nEnded tagging process.\n")
 
 if "__main__" == __name__:
 	#################

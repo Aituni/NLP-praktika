@@ -5,3 +5,5 @@ Tagger/__pycache__/
 tests/Input/1.txt
 tests/Output/1.txt
 tests/Output/1.json
+tests/Output/OUT*
+Server&Client/__pycache__/

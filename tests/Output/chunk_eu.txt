@@ -1,4 +1,4 @@
-Tagger (flair): ../Models/trained_models/Flair/chunk/eu\best-model.pt
+Tagger (flair): ../Models/trained_models/Flair/chunk/eu/best-model.pt
 
 FLAIR: 
 
