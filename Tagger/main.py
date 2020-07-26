@@ -2,9 +2,7 @@ import flair_tagging as fl
 import transformer_tagging as tf
 import preparations as prep
 import json
-
-IN_PATH = "../tests/Input/" 
-OUT_PATH = "../tests/Output/" 
+import settings
 
 """
 	void file_cases(..):
@@ -18,7 +16,7 @@ OUT_PATH = "../tests/Output/"
 		File outFile: Is the file where sentences will be writed, with the results
 
 		Bool json: Is the output format. True value, will make output be writed in json format.
-					False, will make output be writed in txt format with CoNLL style.
+					False, will make output be writed in tsv format with CoNLL style.
 
 		String tf_tagger: model name or path for tagging or classification using transformers.
 							put	empty string ("") if you dont want to clasify with transformers.
@@ -45,11 +43,11 @@ def file_cases(inFile, outFile, json, tf_tagger, fl_tagger, tagger_info=True):
 		if tagger_info:
 			outFile.write("\nFLAIR: \n\n")
 		if json:
-			results=[]
-			taggers=['ner', 'pos', 'chunk']
-			results.append(fl.tag_listSentences(text, 'ner'))
-			results.append(fl.tag_listSentences(text, 'pos'))
-			results.append(fl.tag_listSentences(text, 'chunk'))
+			# to add more taggers, just add tagger name to 'json_taggers' array in settings.py
+			results = []
+			taggers = settings.config.ALL['json_taggers']
+			for tagger in taggers:
+				results.append(fl.tag_listSentences(text, tagger))
 			print_json(outFile, results, taggers)
 		else:
 			sentences = fl.tag_listSentences(text, fl_tagger)
@@ -146,7 +144,7 @@ def print_CoNLL(outFile, sentences, tagger):
 		for word_dict in dictList:
 			text = word_dict['text']
 			tag = word_dict[tagger+'_label']
-			outFile.write("{:>18}  {:<8}\n".format(text, tag))	
+			outFile.write("{:>18}\t{:<8}\n".format(text, tag))	
 
 """
 	void print_json(...):
@@ -207,7 +205,7 @@ def print_json(outFile, sentences_listOfModels, taggers):
 					default: 'english_text.txt'
 
 		String out_filename: Is the file name where the results will be writed. DO NOT WRITE FORMAT (.txt, ...)
-					  		 if JSON = True, the file will be in 'json' format, else 'txt'.
+					  		 if JSON = True, the file will be in 'json' format, else 'tsv'.
 					  default: '1'
 
 		String algorithm:  Is the algorithm we want to use. 
@@ -224,9 +222,9 @@ def print_json(outFile, sentences_listOfModels, taggers):
 					 - 'pos' = Part Of Speech (only English and Spanish)
 					 - 'chunk' = chunking  (only English)
 					default: 'ner'
-		Bool json: outfile format (json or txt).
+		Bool json: outfile format (json or tsv).
 				Options:   	True = print more info for each word (NER, POS, Chunking) in json format. ('only en')
-					   		False = print chosen tag in 'tagger' in txt format, CoNLL style.
+					   		False = print chosen tag in 'tagger' in tsv format, CoNLL style.
 					default = False
 		Bool tag_info: Used Tagger info.
 				Options:   	True = print few info about the tagger (ONLY WITH JSON = False)
@@ -242,12 +240,12 @@ def main(
 	json = False,
 	tag_info = False):
 
-	in_filePath = IN_PATH + in_filename
+	in_filePath = settings.config.paths['in'] + in_filename
 	if json:
-		out_filePath = OUT_PATH + out_filename + ".json"
+		out_filePath = settings.config.paths['out'] + out_filename + ".json"
 		tag_info = False # can not insert info in json format
 	else:
-		out_filePath = OUT_PATH + out_filename + ".txt"
+		out_filePath = settings.config.paths['out'] + out_filename + ".tsv"
 
 	code, flair_model, transformers_model = prep.obtain_model(algorithm, tagger, language)
 	if code[0] == -1:#ERROR
@@ -263,7 +261,7 @@ def main(
 		finally:
 			outFile.close()
 			inFile.close()
-			print ("\nEnded tagging process.\n")
+		print ("\nEnded tagging process.\n")
 
 if "__main__" == __name__:
 	#################

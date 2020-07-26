@@ -1,6 +1,10 @@
+
 class Command:
-	File, Size, Parameters, Quantity, Close, Options = ("FLE", "SZE", "PRM", "QTY", "CLS", "OPT")
-	port = 50013
+	File, Size, Parameters, Update, Close, Options, Version = ("FLE", "SZE", "PRM", "UPD", "CLS", "OPT", "VRS")
+	#resp
+	OK, Error = ('OK+', 'ER-')
+	port = 50015
+	coding = "UTF-8"
 
 #devuelve el paquete recibido con el comando y sin la marca de fin.
 def recvline( s, removeEOL = True ):
@@ -31,4 +35,34 @@ def recvall( s, size ):
 		message += chunk
 	return message
 
+def download_file(s):
+	msg = recvline(s).decode(Command.coding) # SZE12345#filename
+	msg = msg[3:].split("#")
+	size = int(msg[0])
+	filename = msg[1]
 
+	s.sendall("{}\r\n".format(Command.OK).encode(Command.coding)) # OK+\r\n
+
+	downld_data = recvall(s,size)# file data
+	outfile = open(filename, "wb")
+	outfile.write(downld_data)
+	outfile.close()
+
+	print("\n Downloaded '{}' file with the results.".format(filename))
+	return filename
+
+def upload_file(s, path):
+
+	file = open(path, "rb")
+	contenido = file.read()
+	size = len(contenido)
+	filename = path.split("/")
+	filename = filename[-1]
+
+	msg = "{}{}#{}\r\n".format(Command.Size, size, filename) # SZE1234#filename\r\n
+	s.sendall(msg.encode(Command.coding))
+	#TODO: controlar error
+	resp = recvline(s).decode(Command.coding) # OK+ or ER-
+
+	s.sendall(contenido) # file
+	file.close()
