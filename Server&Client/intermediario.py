@@ -1,9 +1,10 @@
 
 class Command:
-	File, Size, Parameters, Update, Close, Options, Version = ("FLE", "SZE", "PRM", "UPD", "CLS", "OPT", "VRS")
+	File, Size, Parameters, Update = ("FLE", "SZE", "PRM", "UPD")
+	Close, Options, Version, Quantity = ("CLS", "OPT", "VRS", "QTY")
 	#resp
 	OK, Error = ('OK+', 'ER-')
-	port = 50015
+	port = 50011
 	coding = "UTF-8"
 
 #devuelve el paquete recibido con el comando y sin la marca de fin.
@@ -41,8 +42,6 @@ def download_file(s):
 	size = int(msg[0])
 	filename = msg[1]
 
-	s.sendall("{}\r\n".format(Command.OK).encode(Command.coding)) # OK+\r\n
-
 	downld_data = recvall(s,size)# file data
 	outfile = open(filename, "wb")
 	outfile.write(downld_data)
@@ -59,10 +58,17 @@ def upload_file(s, path):
 	filename = path.split("/")
 	filename = filename[-1]
 
-	msg = "{}{}#{}\r\n".format(Command.Size, size, filename) # SZE1234#filename\r\n
-	s.sendall(msg.encode(Command.coding))
-	#TODO: controlar error
-	resp = recvline(s).decode(Command.coding) # OK+ or ER-
+	msg = "{}{}#{}\r\n".format(Command.Size, size, filename) 
+	s.sendall(msg.encode(Command.coding)) # SZE1234#filename\r\n
 
 	s.sendall(contenido) # file
 	file.close()
+
+def isOK(msg):
+	comand = msg[:3]
+	rest = msg[3:]
+	if comand == Command.OK:
+		return True
+	elif comand == Command.Error:
+		# TODO: print error with code 'rest'
+		return False

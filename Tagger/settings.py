@@ -1,4 +1,4 @@
-import json
+import json, sys
 
 class config:
 
@@ -68,5 +68,16 @@ def make_json():
 	file.write(json.dumps(config.ALL, indent = 4, sort_keys=True))
 	file.close()
 
-#for opt in config.params['json']: # pruebas
-#	print(config.params['json'][opt])
+def get_version():
+	print(config.VERSION)
+
+if "__main__" == __name__:
+	if len( sys.argv ) == 2:
+		if sys.argv[1] == "v":
+			get_version()
+		else:
+			print( "Use: {} <v> or nothing else".format( sys.argv[0] ) )
+	elif len( sys.argv ) == 1:
+		make_json()
+	else:
+			print( "Use: {} <v> or nothing else".format( sys.argv[0] ) )

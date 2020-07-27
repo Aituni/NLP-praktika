@@ -3,6 +3,7 @@ import transformer_tagging as tf
 import preparations as prep
 import json
 import settings
+import sys
 
 """
 	void file_cases(..):
@@ -263,50 +264,54 @@ def main(
 			inFile.close()
 		print ("\nEnded tagging process.\n")
 
+
 if "__main__" == __name__:
 	#################
 	### MAIN CALL ###
 	#################
-
-	# Edit parameters here, save and execute this file
-	main(	
-		in_filename = 'eusk_text.txt', # do write format
-		out_filename = 'chunk_eu', 	  # do NOT write format
-		algorithm = 'F',	 #	'F' = Flair(Recommended) 	'T' = Transformers (experimental) 		'FT' = Both (experimental)
-		language = 'eu',	#  'eu' = euskera		'es' = español		'en' = english		'ca' = catalan		'gl' = gallego
-		tagger = 'chunk',		# 'ner'= (all languages)		'pos' = (only English and Spanish)		'chunk' = (only English)
-		json = False,	# outfile format.
-		tag_info = True)  # info about tagger
+	if len( sys.argv ) != 8 and len( sys.argv ) !=1:
+		print( "Uso: {} <in_filename> <out_filename> <algorithm> <language> <tagger> <json> <tag_info>".format( sys.argv[0] ) )
+		exit( 1 )
+	elif len( sys.argv ) == 8:
+		print(sys.argv[6], sys.argv[7])
+		main(	
+			in_filename = sys.argv[1], # do write format
+			out_filename = sys.argv[2], 	  # do NOT write format
+			algorithm = sys.argv[3],	 #	'F' = Flair(Recommended) 	'T' = Transformers (experimental) 		'FT' = Both (experimental)
+			language = sys.argv[4],	#  'eu' = euskera		'es' = español		'en' = english		'ca' = catalan		'gl' = gallego
+			tagger = sys.argv[5],		# 'ner'= (all languages)		'pos' = (only English and Spanish)		'chunk' = (only English)
+			json = sys.argv[6] == "True",	# outfile format.
+			tag_info = sys.argv[7])  # info about tagger
 
 	#END
 
 
-	"""
-	----------------------------------------------------------------------------------------------------------------------
-	For text classification is needed other functions. At the moment does not work with this script. Only text tagging works 
-	(for example: 'ner', 'pos' or 'pos-multi')
+"""
+----------------------------------------------------------------------------------------------------------------------
+For text classification is needed other functions. At the moment does not work with this script. Only text tagging works 
+(for example: 'ner', 'pos' or 'pos-multi')
 
-	Some interesting models (flair):
-	- pos-multi: Part of speech (verb, noun, etc.), multiple languages (English, German, French,
-		 Italian, Dutch, Polish, Spanish, Swedish, Danish, Norwegian, Finnish and Czech)
-	- ner: 4-class Named Entity Recognition, english model.
-	- sentiment: text classification, [positive, negative] sentiment. English model.
-	- frame: Semantic Frame Detection (experimental). Makes a distinction between two different meanings of the same word.
-			(Error with windows paths)
+Some interesting models (flair):
+- pos-multi: Part of speech (verb, noun, etc.), multiple languages (English, German, French,
+	 Italian, Dutch, Polish, Spanish, Swedish, Danish, Norwegian, Finnish and Czech)
+- ner: 4-class Named Entity Recognition, english model.
+- sentiment: text classification, [positive, negative] sentiment. English model.
+- frame: Semantic Frame Detection (experimental). Makes a distinction between two different meanings of the same word.
+		(Error with windows paths)
 
 
-	Some interesting models (transformer):
-	- ner: 4-class Named Entity Recognition, english model. example: I-LOC 
-		notation:
-			x-LOC == Location
-			x-PER == Person
-			x-ORG == Organization
-			o == Other
+Some interesting models (transformer):
+- ner: 4-class Named Entity Recognition, english model. example: I-LOC 
+	notation:
+		x-LOC == Location
+		x-PER == Person
+		x-ORG == Organization
+		o == Other
 
-			B-x == Beginning of entity
-			I-x == Inside entity
-			O-x == Outside entity
-	- sentiment-analysis: text classification, [positive, negative] sentiment. English model.
-	- frame: Semantic Frame Detection (experimental). Makes a distinction between two different meanings of the same word.
-			(Error with windows paths)
-	"""
+		B-x == Beginning of entity
+		I-x == Inside entity
+		O-x == Outside entity
+- sentiment-analysis: text classification, [positive, negative] sentiment. English model.
+- frame: Semantic Frame Detection (experimental). Makes a distinction between two different meanings of the same word.
+		(Error with windows paths)
+"""
