@@ -2,7 +2,7 @@
 
 import socket, sys, time
 import intermediario as inter
-import json, glob
+import json, glob, os
 
 PORT = inter.Command.port
 CODING = inter.Command.coding
@@ -35,6 +35,7 @@ def client(s): #return True to continue, False to exit
 	#----------------------#
 	#   VERSION / UPDATE   #
 	#----------------------#
+	#TODO: app exit when download for the first time settings.json
 	msg = inter.recvline(s).decode(CODING)# VRS0.2\r\n
 	comando = msg[:3]
 	if comando != inter.Command.Version:
@@ -100,6 +101,8 @@ def client(s): #return True to continue, False to exit
 		print_menu("upload_file")
 		while True:
 			path = input()
+			if path.find("'")!=-1:
+				path=path[:-1].replace("'", "")
 			action = special_actions(path)
 			if action:
 				if action == -1:
@@ -121,6 +124,8 @@ def client(s): #return True to continue, False to exit
 		files = []
 		while True:
 			path = input()
+			if path.find("'")!=-1:
+				path=path[:-1].replace("'", "")
 			action = special_actions(path)
 			if action:
 				if action == -1:
@@ -133,17 +138,18 @@ def client(s): #return True to continue, False to exit
 					break
 			else:
 				print(" {} dir not found.".format(path))
+
 		file_qty = str(len(files))
 		s.sendall("{}{}\r\n".format(inter.Command.Quantity, file_qty).encode(CODING))
-		cont = 0
+		count = 0
 		for file in files:
-			inter.upload_file(s, path)
+			inter.upload_file(s, file)
 			if not inter.isOK(inter.recvline(s).decode(CODING)):
 				print("Error with '{}' file".format(str(file)))
 			else:
 				inter.download_file(s)
 				count += 1
-				print("Completed {}/{} files".format(count(), file_qty))
+				print("Completed {}/{} files".format(str(count), str(file_qty)))
 
 	else:
 		print(" Invalid file type ")

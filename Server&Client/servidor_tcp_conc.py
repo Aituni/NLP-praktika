@@ -2,7 +2,7 @@
 
 import socket, os, signal
 import intermediario as inter
-import sys, importlib
+import sys, importlib, json
 
 PORT = inter.Command.port
 CODING = inter.Command.coding
@@ -14,7 +14,6 @@ def servidor():
 	s.bind( ('', PORT) )
 	s.listen( 5 )
 
-	signal.signal(signal.SIGCHLD, signal.SIG_IGN)
 	config_version = 0
 
 	while True:
@@ -28,13 +27,7 @@ def servidor():
 		else:
 			#son
 			s.close()
-			#update config
-			new_config_version = get_updatedConfig(config_version)
-			if new_config_version > config_version:
-				config_version = new_config_version
-				config = load_appConfig()
-
-
+			config = load_appConfig()
 			while True:
 				if not service(dialogo, config):
 					break
@@ -47,16 +40,15 @@ def servidor():
 def service(s, config):
 	
 	# enviar version
-	resp = inter.Command.Version+str(config.ALL['version'])+"\r\n"# VRS0.2\r\n
+	resp = inter.Command.Version+str(config['version'])+"\r\n"# VRS0.2\r\n
 	s.sendall(resp.encode(CODING))
 
 	msg = inter.recvline(s).decode(CODING)
 	if msg[:3] == inter.Command.Close:
 		return False
 	elif msg[:3] == inter.Command.Update:
-		settings.make_json()
 		inter.upload_file(s, APP_PATH+'settings.json')
-		#os.remove('settings.json') #TODO cuando se separen serv&Cli de Tagger
+		#os.remove('settings.json') #TODO
 
 	elif msg[:3] == inter.Command.Parameters:
 		msg = msg[3:]#quitar comando
@@ -77,73 +69,50 @@ def service(s, config):
 		elif comando == inter.Command.File:
 			#test files
 			fileNum = int(msg[3:])#quitar comando
-			filename = get_testFilename(fileNum)
+			filename = config['test_files'][fileNum]
 
 		elif comando == inter.Command.Size:
 			#uploaded file
-			filename = inter.download_file(s)
+			filename = inter.download_file(s, msg, outDir=config['paths']['server_in'])
 
 		elif comando == inter.Command.Quantity:
 			# TODO: control de errores
 			files_qty = int(msg[3:])
-			filename = inter.download_file(s)
+			filename = inter.download_file(s, outDir=config['paths']['server_in'])
 
 		for i in range(files_qty):
 			if i > 0:
-				filename = inter.download_file(s) 
+				filename = inter.download_file(s, outDir=config['paths']['server_in']) 
+			filepath = config['paths']['server_in']+filename
 			print('Ejecucion de aplicacion:')
 			#os.path.basename(path) # rm folders form path
 			(outFilename, ext) = os.path.splitext(filename)
 			outFilename = "OUT_"+ outFilename
+			outFilepath = config['paths']['server_out']+outFilename
+
 			pid = os.fork()
 			if not pid:
 				#son
 				s.close()
 				msg = 'python3 {}main.py {} {} {} {} {} {} {}'.format(
-					APP_PATH, filename, outFilename, alg, lan, tag, json, tag_info )
+					APP_PATH, filepath, outFilepath, alg, lan, tag, json, tag_info )
 				os.system(msg)
 				exit(0)
-
-			if json:
-				formato = ".json"
 			else:
-				formato = ".tsv"
-			outfilepath = config.ALL['paths']['out']+outFilename+formato
+				os.wait() # wait until son end processing file
 
-			resp = inter.Command.OK+"\r\n"
-			s.sendall(resp.encode(CODING)) # OK+
+				if json:
+					formato = ".json"
+				else:
+					formato = ".tsv"
+				outFilepath = outFilepath+formato
 
-			wait(pid) # wait until son end processing file
-			inter.upload_file(s, outfilepath)
+				resp = inter.Command.OK+"\r\n"
+				s.sendall(resp.encode(CODING)) # OK+
 
-	return True
+				inter.upload_file(s, outFilepath)
 
-def get_updatedConfig(Current_version):
-	pid = os.fork()
-	if not pid:
-		#son
-		os.system("python3 {}settings.py v".format(APP_PATH))
-		exit(0)
-	#out, err = pid.communicate() #TODO
-	wait(pid) # wait until settings version are completely exported
-
-	#new_version = int(out)  #TODO
-	new_version = 0.2
-
-	if Current_version < new_version:
-		pid2 = os.fork()
-		if not pid2:
-			#son
-			os.system("python3 {}settings.py ".format(APP_PATH))
-			exit(0)
-	wait(pid2) # wait until settings are completely exported
-
-	return new_version
-
-
-def get_testFilename(fileNum):
-	files = settings.config.ALL['test_files']
-	return files[fileNum]
+	return True	
 
 def load_appConfig():
 	file = open(APP_PATH+'settings.json', 'r')

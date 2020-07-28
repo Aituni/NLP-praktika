@@ -21,6 +21,10 @@ Results(chunk_eu):
 - F1-score (micro) 0.9412
 - F1-score (macro) 0.6315
 
+Results (trfm_eu):
+- F1-score (micro) 0.7885
+- F1-score (macro) 0.6118
+
 # Uso
 
 Añadir los parametros deseados en Tagger/main.py, a la llamada de la función main(...) que se encuentra en la parte inferior del archivo, guardar los cambios y ejecutar este mismo archivo.

@@ -6,4 +6,9 @@ tests/Input/1.txt
 tests/Output/1.txt
 tests/Output/1.json
 tests/Output/OUT*
+tests/srvIN/*
+tests/srvOUT/*
 Server&Client/__pycache__/
+Server&Client/a.txt
+Server&Client/carpet/
+Server&Client/

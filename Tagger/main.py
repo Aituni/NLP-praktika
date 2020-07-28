@@ -2,7 +2,6 @@ import flair_tagging as fl
 import transformer_tagging as tf
 import preparations as prep
 import json
-import settings
 import sys
 
 """
@@ -46,7 +45,7 @@ def file_cases(inFile, outFile, json, tf_tagger, fl_tagger, tagger_info=True):
 		if json:
 			# to add more taggers, just add tagger name to 'json_taggers' array in settings.py
 			results = []
-			taggers = settings.config.ALL['json_taggers']
+			taggers = load_appConfig()['json_taggers']
 			for tagger in taggers:
 				results.append(fl.tag_listSentences(text, tagger))
 			print_json(outFile, results, taggers)
@@ -60,6 +59,12 @@ def file_cases(inFile, outFile, json, tf_tagger, fl_tagger, tagger_info=True):
 """
 def isTag(word):
 	return word[0] == '<'
+
+def load_appConfig():
+	file = open(APP_PATH+'settings.json', 'r')
+	config = json.load(file)
+	file.close()
+	return config
 """
 	Array({}) getWordDictList(...):
 
@@ -241,12 +246,12 @@ def main(
 	json = False,
 	tag_info = False):
 
-	in_filePath = settings.config.paths['in'] + in_filename
+	in_filePath = in_filename
 	if json:
-		out_filePath = settings.config.paths['out'] + out_filename + ".json"
+		out_filePath = out_filename + ".json"
 		tag_info = False # can not insert info in json format
 	else:
-		out_filePath = settings.config.paths['out'] + out_filename + ".tsv"
+		out_filePath = out_filename + ".tsv"
 
 	code, flair_model, transformers_model = prep.obtain_model(algorithm, tagger, language)
 	if code[0] == -1:#ERROR
@@ -269,11 +274,21 @@ if "__main__" == __name__:
 	#################
 	### MAIN CALL ###
 	#################
+	"""
+	main(	
+			in_filename = "../tests/Input/eusk_text.txt", # do write format
+			out_filename = "../tests/Output/CoNLL-eu_TRFM", 	  # do NOT write format
+			algorithm = 'F',	 #	'F' = Flair(Recommended) 	'T' = Transformers (experimental) 		'FT' = Both (experimental)
+			language = 'eu',	#  'eu' = euskera		'es' = español		'en' = english		'ca' = catalan		'gl' = gallego
+			tagger = '../Models/trained_models/Transformer/NER/eu/best-model.pt',		# 'ner'= (all languages)		'pos' = (only English and Spanish)		'chunk' = (only English)
+			json = False,	# outfile format.
+			tag_info = True)  # info about tagger
+	"""
+	
 	if len( sys.argv ) != 8 and len( sys.argv ) !=1:
 		print( "Uso: {} <in_filename> <out_filename> <algorithm> <language> <tagger> <json> <tag_info>".format( sys.argv[0] ) )
 		exit( 1 )
 	elif len( sys.argv ) == 8:
-		print(sys.argv[6], sys.argv[7])
 		main(	
 			in_filename = sys.argv[1], # do write format
 			out_filename = sys.argv[2], 	  # do NOT write format

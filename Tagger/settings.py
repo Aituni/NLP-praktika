@@ -42,8 +42,8 @@ class config:
 
 	## PATHS
 
-	paths = { 'in'  : "../tests/Input/",
-	 		  'out' : "../tests/Output/" }
+	paths = { 	'server_in': "../tests/srvIN/",
+				'server_out': "../tests/srvOUT/" }
 
 	## json
 

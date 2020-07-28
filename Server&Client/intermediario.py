@@ -4,7 +4,7 @@ class Command:
 	Close, Options, Version, Quantity = ("CLS", "OPT", "VRS", "QTY")
 	#resp
 	OK, Error = ('OK+', 'ER-')
-	port = 50011
+	port = 50018
 	coding = "UTF-8"
 
 #devuelve el paquete recibido con el comando y sin la marca de fin.
@@ -36,18 +36,19 @@ def recvall( s, size ):
 		message += chunk
 	return message
 
-def download_file(s):
-	msg = recvline(s).decode(Command.coding) # SZE12345#filename
+def download_file(s, msg = '', outDir=''):
+	if not msg:
+		msg = recvline(s).decode(Command.coding) # SZE12345#filename
 	msg = msg[3:].split("#")
 	size = int(msg[0])
 	filename = msg[1]
 
 	downld_data = recvall(s,size)# file data
-	outfile = open(filename, "wb")
+	outfile = open(outDir+filename, "wb")
 	outfile.write(downld_data)
 	outfile.close()
 
-	print("\n Downloaded '{}' file with the results.".format(filename))
+	print("\n Downloaded '{}' file.".format(filename))
 	return filename
 
 def upload_file(s, path):
@@ -58,7 +59,7 @@ def upload_file(s, path):
 	filename = path.split("/")
 	filename = filename[-1]
 
-	msg = "{}{}#{}\r\n".format(Command.Size, size, filename) 
+	msg = "{}{}#{}\r\n".format(Command.Size, str(size), filename) 
 	s.sendall(msg.encode(Command.coding)) # SZE1234#filename\r\n
 
 	s.sendall(contenido) # file

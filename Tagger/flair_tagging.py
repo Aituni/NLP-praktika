@@ -38,3 +38,5 @@ def tag_listSentences(text, clas_type):
 		 Italian, Dutch, Polish, Spanish, Swedish, Danish, Norwegian, Finnish and Czech)
 	- ner: 4-class Named Entity Recognition, english model.
 	"""
+#print(tag_listSentences( "Gaur goizean, Iker Tolosarekin batera Tolosara joan dira inauteriak ospatzera. Atzo Kattalin iphone bat erosi zun Apple denda ofizialean.", 
+	#"../Models/trained_models/Transformer/NER/eu/best-model.pt"))

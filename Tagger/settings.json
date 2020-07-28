@@ -1,0 +1,43 @@
+{
+    "json_taggers": [
+        "ner",
+        "pos",
+        "chunk"
+    ],
+    "params": {
+        "algorithm": {
+            "F": "Flair (Recommended)",
+            "FT": "Flair and Transformers (only ner, Experimental)",
+            "T": "Transformers (only ner, Experimental)"
+        },
+        "json": {
+            "false": "(.tsv) Print in CoNLL format (tsv)",
+            "true": "(.json) Print tags in json file (only english using Flair)"
+        },
+        "language": {
+            "ca": "Catalan",
+            "en": "English",
+            "es": "Espa\u00f1ol",
+            "eu": "Euskera",
+            "ga": "Gallego"
+        },
+        "tag_info": {
+            "false": "No. Do not write extra info about tagger (only txt)",
+            "true": "Yes. Write extra info about tagger (only txt)"
+        },
+        "tagger": {
+            "chunk": "Chunking (only english)",
+            "ner": "(ner) Named Entity Recognition",
+            "pos": "(pos) Part Of Speech (spanish and english)"
+        }
+    },
+    "paths": {
+        "server_in": "../tests/srvIN/",
+        "server_out": "../tests/srvOUT/"
+    },
+    "test_files": [
+        "english_text.txt",
+        "eusk_text.txt"
+    ],
+    "version": 0.21
+}
