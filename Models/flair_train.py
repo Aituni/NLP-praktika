@@ -206,11 +206,11 @@ def train_flair_chunk(path):
 
 if "__main__" == __name__:
 
-    #train_TRFM()
+    train_TRFM("./trained_models/Transformer/NER")
 
     #train_flair_ner()
     
-    train_flair_time("./trained_models/Flair/time")
+    #train_flair_time("./trained_models/Flair/time")
 
     #train_flair_chunk("./trained_models/Flair/chunk/eu")
 

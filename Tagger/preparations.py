@@ -2,6 +2,9 @@ import requests
 import glob
 import os
 
+CONFIG = []
+URL = []
+
 """
 	obtain_model(...):	MAIN function
 	Return : Array(int), string, string
@@ -9,23 +12,24 @@ import os
 	With given parameters, it will obtain wich model we will use. If does not exist locally,
 	it will create the directory and will try to download the correct model.
 """
-def obtain_model(algorithm, tagger, language):
+def obtain_model(algorithm, tagger, language, settings):
+	CONFIG.append(settings['params'])
+	URL.append(settings['url'])
 
 	### Directorio ###
-	code, fl_path, tf_path = obtain_dir(algorithm, tagger, language)
+	code, fl_path = obtain_dir(algorithm, tagger, language)
 	if code[0] == -1: #ERROR
-		return code, fl_path, tf_path
-	make_dirs(fl_path, tf_path)
-
+		return code, fl_path
+	make_dirs(fl_path)
 
 	### file ###
-	code, fl_path, tf_path = official_or_manual_models(code, fl_path, tf_path, tagger)
+	code, fl_path = official_or_manual_models(code, fl_path, tagger)
 	if code[0] != 0:# not found official or manual path
-		code, fl_path, tf_path = obtain_FilePath(code, fl_path, tf_path) # get local model, on the path
+		code, fl_path = obtain_FilePath(code, fl_path) # get local model, on the path
 		if code[0] != 0: # file not found locally
-			download(code, fl_path, tf_path)#download model if is accesible
+			download(code, fl_path)#download model if is accesible
 
-	return code, fl_path, tf_path
+	return code, fl_path
 """
 	obtain_dir(...):
 	Return : Array(int), string, string
@@ -35,106 +39,68 @@ def obtain_model(algorithm, tagger, language):
 
 	array(int) code: have all the info about the model.
 		each position and value meaning:
-			#pos 0. = algorithm (1-flair, 2-transformer, 3-both) -- Special (-1 ERROR, 0 Success)
+			#pos 0. = algorithm (1-flair, 2-transformer) -- Special (-1 ERROR, 0 Success)
 			#pos 1. = tagger (1-ner, 2-pos, 3-chunk, 4-manually)
 			#pos 2. = language (1-eu, 2-es, 3-en, 4-ca, 5-gl)
 		example: [1,1,3] = flair ner model for english language
 
 """
 def obtain_dir(algorithm, tagger, language): 	
-	# 0. = algorithm (1-flair, 2-transformer, 3-both) -- Special (-1 ERROR, 0 Success)
+	# 0. = algorithm (1-flair, 2-transformer) -- Special (-1 ERROR, 0 Success)
 	# 1. = tagger (1-ner, 2-pos, 3-chunk, 4-manually)
 	# 2. = language (1-eu, 2-es, 3-en, 4-ca, 5-gl)
 	code = [] # id del modelo
+	fl_path = '../Models/trained_models/'
 
 	### ALGORITMO ### code[0]
-
-	if algorithm == 'F':
-		# put empty string ("") if you dont want to clasify with that alorithm.
-		fl_path = '../Models/trained_models/Flair/'
-		tf_path = ''
-		code.append(1)
-	elif algorithm == 'T':
-		# put empty string ("") if you dont want to clasify with that alorithm.
-		fl_path = ''
-		tf_path = '../Models/trained_models/Transformer/'
-		code.append(2)
-	elif algorithm == 'FT' or algorithm == 'TF':
-		fl_path = '../Models/trained_models/Flair/'
-		tf_path = '../Models/trained_models/Transformer/'
-		code.append(3)
-	else:
+	done = False
+	for alg in CONFIG[0]['algorithm']:
+		if algorithm == alg:
+			fl_path = fl_path + alg + "/"
+			code.append(alg)
+			done = True
+			break
+	if not done:
 		print("Please, choose one valid algorithm.")
 		return [-1], "", ""
 
-	### tagger ### code[1]
-
-	if tagger == 'ner':
-		if fl_path:
-			fl_path = fl_path+'ner/'
-		if tf_path:
-			tf_path = tf_path+'ner/'
-		code.append(1)
-
-	elif tagger == 'pos':
-		if fl_path:
-			fl_path = fl_path+'pos/'
-		if tf_path:
-			tf_path = tf_path+'pos/'
-		code.append(2)
-
-	elif tagger == 'chunk':
-		if fl_path:
-			fl_path = fl_path+'chunk/'
-		if tf_path:
-			tf_path = tf_path+'chunk/'
-		code.append(3)
-
-	else: # insertado manualmente el modelo concreto
-		if algorithm == 'FT' or algorithm == 'TF':
-			print("Please, choose only one algorithm for manual models.")
-			return [-1], "", ""
+	### TAGGER ### code[1]
+	done = False
+	for tag in CONFIG[0]['tagger']:
+		if tagger == tag:
+			fl_path = fl_path + tag + "/"
+			code.append(tag)
+			done = True
+			break
+	if not done: # insertado manualmente el modelo concreto
 		code.append(4)
 
 	### IDIOMA ### code[2]
-
-	if language == 'eu':
-		code.append(1)
-	elif language == 'es':
-		code.append(2)
-	elif language == 'en':
-		code.append(3)
-	elif language == 'ca':
-		code.append(4)
-	elif language == 'gl':
-		code.append(5)
-	else:
+	done = False
+	for lan in CONFIG[0]['language']:
+		if language == lan:
+			fl_path = fl_path + lan + "/"
+			code.append(lan)
+			done = True
+			break
+	if not done: # insertado manualmente el modelo concreto
 		print("Please, choose one valid language.")
 		return [-1], "", ""
 
-	if fl_path:
-		fl_path = fl_path + language
-	if tf_path:
-		tf_path = tf_path + language 
-
-	return code, fl_path, tf_path
+	return code, fl_path
 """
 	void make_dir's(...):
 	If the model's path does not exist. it will create it.
 """
-def make_dirs(fl_path, tf_path):
+def make_dirs(fl_path):
 	fl_exist = True
 	tf_exist = True
 	if fl_path:
 		fl_exist = os.path.isdir(fl_path)
-	if tf_path:
-		tf_exist = os.path.isdir(tf_path)
 
 	if not (fl_exist and tf_exist): #si los directorios no existen, crearlos
 		if fl_path:
 			os.makedirs(fl_path, exist_ok = True)
-		if tf_path:
-			os.makedirs(tf_path, exist_ok = True)
 """
 	official_or_manual_models(...):
 		if it exists an official model for wanted tagger, it will choose it.
@@ -144,36 +110,30 @@ def make_dirs(fl_path, tf_path):
 		it returns an updated parameters (except tagger)
 
 """
-def official_or_manual_models(code, fl_path, tf_path, tagger):
+def official_or_manual_models(code, fl_path, tagger):
 
 	### MODELOS OFICIALES ###
-	# 0. = algorithm (1-flair, 2-transformer, 3-both)
+	# 0. = algorithm (1-flair, 2-transformer)
 	# 1. = tagger (1-ner, 2-pos, 3-chunk, 4-manually)
 	# 2. = language (1-eu, 2-es, 3-en, 4-ca, 5-gl)
 
 	modified = False
 
-	if code[0] == 1 or code[0] == 3: #flair
-		if code[1] == 1:#ner
-			if code[2] == 3:#en
+	if code[0] == 'Flair': 
+		if code[1] == 'ner':
+			if code[2] == 'en':
 				fl_path = 'ner'
 				modified = True
-		if code[1] == 2:#pos
-			if code[2] == 2:#es
+		if code[1] == 'pos':
+			if code[2] == 'es':
 				fl_path = 'pos-multi'
 				modified = True
-			if code[2] == 3: #en
+			if code[2] == 'en': 
 				fl_path = 'pos'
 				modified = True
-		if code[1] == 3:#chunk
-			if code[2] == 3:#en
+		if code[1] == 'chunk':
+			if code[2] == 'en':
 				fl_path = 'chunk'
-				modified = True
-				
-	if code[0] == 2 or code[0] == 3: #transformer
-		if code[1] == 1:#ner
-			if code[2] == 3:#en
-				tf_path = 'ner'
 				modified = True
 
 	### MANUAL - Full path ###
@@ -181,13 +141,12 @@ def official_or_manual_models(code, fl_path, tf_path, tagger):
 	# en este modo solo se utiliza un algoritmo, flair o transformer
 	if code[1] == 4:# MANUAL
 		fl_path = tagger
-		tf_path = tagger
 		modified = True
 
 	if modified:
 		code = [0]
 
-	return code, fl_path, tf_path
+	return code, fl_path
 """
 	obtain_FilePath(...):
 		once we have the model path, this function will find between 
@@ -197,7 +156,7 @@ def official_or_manual_models(code, fl_path, tf_path, tagger):
 	Return : Array(int), string, string
 		it returns an updated parameters
 """
-def obtain_FilePath(code, fl_path, tf_path):
+def obtain_FilePath(code, fl_path):
 	### Nombre del fichero del modelo ###
 	if fl_path:
 		#lista de archivos *.pt en el directorio.
@@ -207,14 +166,8 @@ def obtain_FilePath(code, fl_path, tf_path):
 			code = [0]
 			#escoger primer archivo *.pt por orden alfabetico
 			fl_path = str(file_list[0])
-	
-	if tf_path:#misma estructura, pero con transformers
-		file_list = glob.glob(tf_path+'/*.pt')
-		if len(file_list)!=0:
-			code = [0]
-			tf_path = str(file_list[0])
 
-	return code, fl_path, tf_path
+	return code, fl_path
 """
 	download(...):
 	 	This function try to download choosen model. In their 
@@ -224,9 +177,13 @@ def obtain_FilePath(code, fl_path, tf_path):
 	Return : Array(int), string, string
 		it returns an updated parameters
 """
-def download(code, fl_path, tf_path):
+def download(code, fl_path):
 	filename = 'downloaded-model.pt'
-	url = download_url(code)
+	try:
+		url = URL[code[0]][code[1]][code[2]]
+	except:
+		url = ''
+
 	if not url:
 		print("Error. Model not found. Try downloading manually.")
 		return #end
@@ -237,49 +194,10 @@ def download(code, fl_path, tf_path):
 	#print(r.content)
 	if r.status_code == 200:#OK
 		print("downloading model...\n")
-		if code[0]%2 == 1: #flair
-			outfile=open( fl_path + "/" + filename, "wb" )
-		if code[0] == 2 or code[0] == 3: #transformer
-			outfile=open( tf_path + "/" +  filename, "wb" )
-
+		outfile=open( fl_path + "/" + filename, "wb" )
 		outfile.write(r.content)
 		outfile.close()
-		code=[0]
+		code = [0]
 
-	return code, fl_path + filename, tf_path + filename
-"""
-	String download_url(code):
+	return code, fl_path + filename
 
-		This function return the correspondent model's download url.
-"""
-def download_url(code):
-
-	### ESCOGER URL ###
-
-	# code[0] = algorithm (1-flair, 2-transformer, 3-both)
-	# code[1] = tagger (1-ner, 2-pos, 3-chunk, 4-manually)
-	# code[2] = language (1-eu, 2-es, 3-en, 4-ca, 5-gl)
-	url = ''
-	if code[0]%2 == 1:#flair
-		if code[1] == 1: #ner
-			if code[2] == 1:#eu
-				#flair-ner-eu
-				url = ''
-			if code[2] == 2:#es
-				url = ''	
-			if code[2] == 3:#en
-				url = ''	
-			if code[2] == 4:#ca
-				url = ''	
-			if code[2] == 5:#gl
-				url = ''
-		if code[1] == 2:#pos
-			if code[2] == 1:#eu
-				url = ''	
-			if code[2] == 2:#es
-				url = ''	
-			if code[2] == 3:#en
-				url = ''
-		# ...
-
-	return url

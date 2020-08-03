@@ -23,36 +23,27 @@ import sys
 		String fl_tagger: model name or path for tagging or classification using flair.
 							put	empty string ("") if you dont want to clasify with flair.
 """
-def file_cases(inFile, outFile, json, tf_tagger, fl_tagger, tagger_info=True):
+def file_cases(inFile, outFile, json, fl_tagger, tagger_info=True):
 	
 	if tagger_info:
-		if tf_tagger:
-			outFile.write("Tagger (transformers): "+tf_tagger+ "\n")
-		if fl_tagger:
-			outFile.write("Tagger (flair): "+fl_tagger+ "\n")
+		outFile.write("Tagger: "+fl_tagger+ "\n")
 
 	# Leemos el texto
 	text = inFile.read()
 
-	if tf_tagger: #TODO:
-		if tagger_info:
-			outFile.write("TRANSFORMERS: \n\n")
-		tf.tag_basic(text, tf_tagger, outFile)
-
-	if fl_tagger:# with flair
-		if tagger_info:
-			outFile.write("\nFLAIR: \n\n")
-		if json:
-			# to add more taggers, just add tagger name to 'json_taggers' array in settings.py
-			results = []
-			taggers = load_appConfig()['json_taggers']
-			for tagger in taggers:
-				results.append(fl.tag_listSentences(text, tagger))
-			print_json(outFile, results, taggers)
-		else:
-			sentences = fl.tag_listSentences(text, fl_tagger)
-			#print(sentences[0])
-			print_CoNLL(outFile, sentences, fl_tagger)
+	if tagger_info:
+		outFile.write("\nFLAIR: \n\n")
+	if json:
+		# to add more taggers, just add tagger name to 'json_taggers' array in settings.py
+		results = []
+		taggers = load_appConfig()['json_taggers']
+		for tagger in taggers:
+			results.append(fl.tag_listSentences(text, tagger))
+		print_json(outFile, results, taggers)
+	else:
+		sentences = fl.tag_listSentences(text, fl_tagger)
+		#print(sentences[0])
+		print_CoNLL(outFile, sentences, fl_tagger)
 """
 	Bool isTag(word):
 	Return True only if the given 'word' is a tag. else return False.
@@ -61,7 +52,7 @@ def isTag(word):
 	return word[0] == '<'
 
 def load_appConfig():
-	file = open(APP_PATH+'settings.json', 'r')
+	file = open('settings.json', 'r')
 	config = json.load(file)
 	file.close()
 	return config
@@ -253,17 +244,17 @@ def main(
 	else:
 		out_filePath = out_filename + ".tsv"
 
-	code, flair_model, transformers_model = prep.obtain_model(algorithm, tagger, language)
+	code, flair_model = prep.obtain_model(algorithm, tagger, language, load_appConfig())
 	if code[0] == -1:#ERROR
 		print("Error with selected parameter.")
 		#END
 	elif code[0] != 0: #not found
-		print(code, flair_model, transformers_model)
+		print(code, flair_model)
 	else:
 		try:
 			outFile = open(out_filePath, "w")
 			inFile = open(in_filePath, "r")
-			file_cases(inFile, outFile, json, transformers_model, flair_model, tagger_info=tag_info) # tf, fl
+			file_cases(inFile, outFile, json, flair_model, tagger_info=tag_info) # tf, fl
 		finally:
 			outFile.close()
 			inFile.close()
@@ -274,18 +265,18 @@ if "__main__" == __name__:
 	#################
 	### MAIN CALL ###
 	#################
-	"""
+	
 	main(	
-			in_filename = "../tests/Input/eusk_text.txt", # do write format
-			out_filename = "../tests/Output/CoNLL-eu_TRFM", 	  # do NOT write format
-			algorithm = 'F',	 #	'F' = Flair(Recommended) 	'T' = Transformers (experimental) 		'FT' = Both (experimental)
-			language = 'eu',	#  'eu' = euskera		'es' = español		'en' = english		'ca' = catalan		'gl' = gallego
-			tagger = '../Models/trained_models/Transformer/NER/eu/best-model.pt',		# 'ner'= (all languages)		'pos' = (only English and Spanish)		'chunk' = (only English)
+			in_filename = "../tests/Input/english_text.txt", # do write format
+			out_filename = "../tests/Output/time_en", 	  # do NOT write format
+			algorithm = 'Flair',
+			language = 'en',	#  'eu' = euskera		'es' = español		'en' = english		'ca' = catalan		'gl' = gallego
+			tagger = 'ner',#'../Models/trained_models/Flair/time/en/best-model.pt',		# 'ner'= (all languages)		'pos' = (only English and Spanish)		'chunk' = (only English)
 			json = False,	# outfile format.
 			tag_info = True)  # info about tagger
-	"""
+
 	
-	if len( sys.argv ) != 8 and len( sys.argv ) !=1:
+	if len( sys.argv ) != 8:
 		print( "Uso: {} <in_filename> <out_filename> <algorithm> <language> <tagger> <json> <tag_info>".format( sys.argv[0] ) )
 		exit( 1 )
 	elif len( sys.argv ) == 8:

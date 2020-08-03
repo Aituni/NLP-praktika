@@ -23,8 +23,12 @@ def tag_listSentences(text, clas_type):
 	if not text:
 		return
 
-	# tokenizer se encarga de hacer las separaciones de los puntos etc.
-	sentences = [Sentence(sent, use_tokenizer=True) for sent in split_single(text)] 
+	sentences = [] 
+	for sent in split_single(text):
+		# meter solo aquellas frases que contengan texto.
+		if sent:
+			# tokenizer se encarga de hacer las separaciones de los puntos etc.
+			sentences.append( Sentence(sent, use_tokenizer=True) )
 
 	# predict tags for list of sentences
 	tagger: SequenceTagger = SequenceTagger.load(clas_type)
@@ -38,5 +42,10 @@ def tag_listSentences(text, clas_type):
 		 Italian, Dutch, Polish, Spanish, Swedish, Danish, Norwegian, Finnish and Czech)
 	- ner: 4-class Named Entity Recognition, english model.
 	"""
-#print(tag_listSentences( "Gaur goizean, Iker Tolosarekin batera Tolosara joan dira inauteriak ospatzera. Atzo Kattalin iphone bat erosi zun Apple denda ofizialean.", 
-	#"../Models/trained_models/Transformer/NER/eu/best-model.pt"))
+
+"""
+from flair.embeddings import TransformerWordEmbeddings
+embeddings = TransformerWordEmbeddings('xlm-roberta-base', fine_tune=True)
+print(tag_listSentences( "Gaur goizean, Iker Tolosarekin batera Tolosara joan dira inauteriak ospatzera. Atzo Kattalin iphone bat erosi zun Apple denda ofizialean.", 
+	"../Models/trained_models/Transformer/NER/eu/best-model.pt"))
+"""

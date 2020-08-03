@@ -6,7 +6,9 @@ import json, glob, os
 
 PORT = inter.Command.port
 CODING = inter.Command.coding
-err_msg_inVal = " inserted value is not valid "
+ER_MSG = {
+			0:" inserted value is not valid. insert valid one ",
+		 }
 
 def main():
 	if len( sys.argv ) != 2:
@@ -16,12 +18,12 @@ def main():
 	dir_serv = (sys.argv[1], PORT)
 
 	s = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
-	print(dir_serv)
+	#print(dir_serv)
 	s.connect( dir_serv )
 
 	while True:
 		if not client(s):
-			print(" Turning off. Bye. ")
+			print_menu('turn_off')
 			break
 		else:
 			print_menu('restart')
@@ -73,7 +75,8 @@ def client(s): #return True to continue, False to exit
 					return False # Exit
 			else:
 				if int(file_type) > 3 or int(file_type) < 0:
-					raise InError(err_msg_inVal)
+					print( ER_MSG[0] )
+					continue
 				else:
 					break # valid value
 		except:
@@ -170,6 +173,7 @@ def print_menu(section):
 	
 	elif section == "help": #help
 		print("\n####  HELP:  ####")
+		#TODO
 	elif section == "options":
 		print("\n####  TAGGING FILE:  ####")
 		print("choose which file do you want to analyze")
@@ -180,10 +184,12 @@ def print_menu(section):
 	elif section == "restart":
 		time.sleep(1) #seconds
 		print("\nRESTARTING")
-		for i in range(3):
-			time.sleep(1) #seconds
+		for i in range(3):#animacion prescindible
+			time.sleep(0.5) #seconds
 			print(".")
 		time.sleep(1) #seconds
+	elif section == "turn_off":
+		print("\n Turning off. Bye.")
 
 	elif section == "upload_file":
 		print("\n####  UPLOAD FILE:  ####")
@@ -207,7 +213,7 @@ def special_actions(text, activate_actions = True):
 	resul = 0
 	if text == 'h':
 		if activate_actions:
-			print_menu(-1)
+			print_menu("help")
 		resul = 1
 	if text == 'q':
 		resul = -1
@@ -218,11 +224,11 @@ def ask_params(config):
 	params = config['params']
 
 	def ask_param(parameter):
-		print("\n## {:^20} ##".format(parameter))
+		print("\n## {:^20} ##\n".format(parameter))
 		k = 1
 		opt_KeyDict={}
 		for opt in params[parameter]:
-			print( '{}. {}'.format(str(k), str(params[parameter][opt])) )
+			print( '\t{}. {}'.format(str(k), str(params[parameter][opt])) )
 			opt_KeyDict[k] = opt
 			k+=1
 
@@ -235,14 +241,17 @@ def ask_params(config):
 				else:
 					return ask_params(parameter) # ask again
 			else:
-				if int(selection) > k or int(selection) < 0:
-					raise InError(err_msg_inVal)
+				if int(selection) >= k or int(selection) < 0:
+					print( ER_MSG[0] )
+					return ask_params(parameter) # ask again
 		except:
 			return ask_param(parameter) # ask again
 
 		if int(selection) in opt_KeyDict:
 			return opt_KeyDict[int(selection)]
-		#else return ERROR # TODO: error
+		else:
+			print( ER_MSG[0] )
+			return ask_params(parameter) # ask again
 
 	print_menu("parameters")
 	print("NOTE: \n\tJson include following tags:"+str(config['json_taggers']))
@@ -295,7 +304,8 @@ def ask_testFile(s, config):
 			else:
 				test_file = int(test_file) - 1
 				if test_file >= len(files) or test_file < 0:
-					raise InError(err_msg_inVal)
+					print( ER_MSG[0] )
+					return ask_testFile(s, config) # ask again
 		except:
 			return ask_testFile(s, config) # ask again
 

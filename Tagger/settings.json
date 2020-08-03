@@ -6,9 +6,8 @@
     ],
     "params": {
         "algorithm": {
-            "F": "Flair (Recommended)",
-            "FT": "Flair and Transformers (only ner, Experimental)",
-            "T": "Transformers (only ner, Experimental)"
+            "Flair": "Flair (Recommended)",
+            "Transformers": "Transformers (only ner, Experimental)"
         },
         "json": {
             "false": "(.tsv) Print in CoNLL format (tsv)",
@@ -39,5 +38,16 @@
         "english_text.txt",
         "eusk_text.txt"
     ],
+    "url": {
+        "Flair": {
+            "ner": {
+                "en": "",
+                "es": ""
+            },
+            "pos": {
+                "en": ""
+            }
+        }
+    },
     "version": 0.21
 }

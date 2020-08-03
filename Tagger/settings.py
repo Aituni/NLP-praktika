@@ -2,7 +2,7 @@ import json, sys
 
 class config:
 
-	VERSION = 0.21
+	VERSION = 0.3
 
 	# key : "explicacion"
 	params = {
@@ -20,9 +20,8 @@ class config:
 		},
 
 		'algorithm' : {
-			'F' : 'Flair (Recommended)',
-			'T' : 'Transformers (only ner, Experimental)',
-			'FT' : 'Flair and Transformers (only ner, Experimental)'
+			'Flair' : 'Flair (Recommended)',
+			'Transformers' : 'Transformers (only ner, Experimental)',
 		},
 
 		'tagger' : {
@@ -53,6 +52,20 @@ class config:
 
 	test_files = ['english_text.txt', 'eusk_text.txt']
 
+	## url
+
+	url = {
+		'Flair': {
+			'ner':{
+				'es':'',
+				'en':''
+			},
+			'pos':{
+				'en':''
+			}
+		}
+	}
+
 	## ALL THE CONFIG (to export to json)
 
 	ALL = { 
@@ -60,7 +73,8 @@ class config:
 		'params' : params,
 		'paths' : paths,
 		'json_taggers' : json_taggers,
-		'test_files' : test_files
+		'test_files' : test_files,
+		'url' : url
 		}
 
 def make_json():
