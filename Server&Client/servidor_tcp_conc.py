@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
-import socket, os, signal
+import socket, os, glob
 import intermediario as inter
-import sys, importlib, json
+from shutil import copyfile
 
-PORT = inter.Command.port
-CODING = inter.Command.coding
+PORT = inter.Parameters.Port
+CODING = inter.Parameters.Coding
+ER_MSG = inter.Parameters.Error
 APP_PATH = "../Tagger/"
 
 def servidor():
@@ -27,9 +28,15 @@ def servidor():
 		else:
 			#son
 			s.close()
-			config = load_appConfig()
+			try:
+				config = inter.load_appConfig()
+			except:
+				copyfile(APP_PATH+"settings.json", "settings.json")
+				config = inter.load_appConfig()
+
 			while True:
 				if not service(dialogo, config):
+					clean_files(config)
 					break
 			print( "Solicitud de cierre de conexión recibida." )
 			dialogo.close()
@@ -70,10 +77,7 @@ def service(s, config):
 			#test files
 			fileNum = int(msg[3:])#quitar comando
 			filename = config['test_files'][fileNum]
-
-		elif comando == inter.Command.Size:
-			#uploaded file
-			filename = inter.download_file(s, msg, outDir=config['paths']['server_in'])
+			files_qty = 1
 
 		elif comando == inter.Command.Quantity:
 			# TODO: control de errores
@@ -81,7 +85,7 @@ def service(s, config):
 			filename = inter.download_file(s, outDir=config['paths']['server_in'])
 
 		for i in range(files_qty):
-			if i > 0:
+			if i > 0:#test file dont need to download
 				filename = inter.download_file(s, outDir=config['paths']['server_in']) 
 			filepath = config['paths']['server_in']+filename
 			print('Ejecucion de aplicacion:')
@@ -114,11 +118,14 @@ def service(s, config):
 
 	return True	
 
-def load_appConfig():
-	file = open(APP_PATH+'settings.json', 'r')
-	config = json.load(file)
-	file.close()
-	return config
+def clean_files(config):
+	input_files = glob.glob(config['paths']['server_in'] + "*")
+	output_files = glob.glob(config['paths']['server_out'] + "*")
+
+	files = input_files + output_files
+
+	for file in files:
+		os.remove(file)
 
 if "__main__" == __name__:
 	servidor()

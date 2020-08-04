@@ -265,7 +265,7 @@ if "__main__" == __name__:
 	#################
 	### MAIN CALL ###
 	#################
-	
+	"""
 	main(	
 			in_filename = "../tests/Input/english_text.txt", # do write format
 			out_filename = "../tests/Output/time_en", 	  # do NOT write format
@@ -274,20 +274,27 @@ if "__main__" == __name__:
 			tagger = 'ner',#'../Models/trained_models/Flair/time/en/best-model.pt',		# 'ner'= (all languages)		'pos' = (only English and Spanish)		'chunk' = (only English)
 			json = False,	# outfile format.
 			tag_info = True)  # info about tagger
-
+	"""
 	
 	if len( sys.argv ) != 8:
 		print( "Uso: {} <in_filename> <out_filename> <algorithm> <language> <tagger> <json> <tag_info>".format( sys.argv[0] ) )
 		exit( 1 )
 	elif len( sys.argv ) == 8:
+		if type(sys.argv[6]) == 'bool' and type(sys.argv[7]) == 'bool':
+			js = sys.argv[6]
+			tag = sys.argv[7]
+		else:
+			js = sys.argv[6] == "True"
+			tag = sys.argv[7] == "True"
+
 		main(	
 			in_filename = sys.argv[1], # do write format
-			out_filename = sys.argv[2], 	  # do NOT write format
-			algorithm = sys.argv[3],	 #	'F' = Flair(Recommended) 	'T' = Transformers (experimental) 		'FT' = Both (experimental)
+			out_filename = sys.argv[2], # do NOT write format
+			algorithm = sys.argv[3],	 #	Flair(Recommended) 	Transformers (experimental) 
 			language = sys.argv[4],	#  'eu' = euskera		'es' = español		'en' = english		'ca' = catalan		'gl' = gallego
 			tagger = sys.argv[5],		# 'ner'= (all languages)		'pos' = (only English and Spanish)		'chunk' = (only English)
-			json = sys.argv[6] == "True",	# outfile format.
-			tag_info = sys.argv[7])  # info about tagger
+			json = js,	# outfile format.
+			tag_info = tag)  # info about tagger
 
 	#END
 

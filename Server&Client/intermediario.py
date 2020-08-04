@@ -1,11 +1,18 @@
+import json
 
 class Command:
 	File, Size, Parameters, Update = ("FLE", "SZE", "PRM", "UPD")
-	Close, Options, Version, Quantity = ("CLS", "OPT", "VRS", "QTY")
+	Close, Version, Quantity = ("CLS", "VRS", "QTY")
 	#resp
 	OK, Error = ('OK+', 'ER-')
-	port = 50018
-	coding = "UTF-8"
+
+class Parameters:
+	Port = 50018
+	Coding = "UTF-8"
+
+	Error = {
+			0:" inserted value is not valid. insert valid one ",
+		 }
 
 #devuelve el paquete recibido con el comando y sin la marca de fin.
 def recvline( s, removeEOL = True ):
@@ -26,7 +33,6 @@ def recvline( s, removeEOL = True ):
 		else:
 			CRreceived = False
 
-#sin modificar todavia
 def recvall( s, size ):
 	message = b''
 	while( len( message ) < size ):
@@ -36,9 +42,9 @@ def recvall( s, size ):
 		message += chunk
 	return message
 
-def download_file(s, msg = '', outDir=''):
-	if not msg:
-		msg = recvline(s).decode(Command.coding) # SZE12345#filename
+def download_file(s, outDir=''):
+	
+	msg = recvline(s).decode(Parameters.Coding) # SZE12345#filename
 	msg = msg[3:].split("#")
 	size = int(msg[0])
 	filename = msg[1]
@@ -60,7 +66,7 @@ def upload_file(s, path):
 	filename = filename[-1]
 
 	msg = "{}{}#{}\r\n".format(Command.Size, str(size), filename) 
-	s.sendall(msg.encode(Command.coding)) # SZE1234#filename\r\n
+	s.sendall(msg.encode(Parameters.Coding)) # SZE1234#filename\r\n
 
 	s.sendall(contenido) # file
 	file.close()
@@ -73,3 +79,9 @@ def isOK(msg):
 	elif comand == Command.Error:
 		# TODO: print error with code 'rest'
 		return False
+
+def load_appConfig():
+	file = open('settings.json', 'r')
+	config = json.load(file)
+	file.close()
+	return config

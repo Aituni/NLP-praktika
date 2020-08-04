@@ -2,13 +2,11 @@
 
 import socket, sys, time
 import intermediario as inter
-import json, glob, os
+import glob, os
 
-PORT = inter.Command.port
-CODING = inter.Command.coding
-ER_MSG = {
-			0:" inserted value is not valid. insert valid one ",
-		 }
+PORT = inter.Parameters.Port
+CODING = inter.Parameters.Coding
+ER_MSG = inter.Parameters.Error
 
 def main():
 	if len( sys.argv ) != 2:
@@ -45,7 +43,15 @@ def client(s): #return True to continue, False to exit
 		return False
 	else:
 		version = float(msg[3:])
-		config = load_appConfig(s, version)
+		try:
+			config = inter.load_appConfig()
+			if config['version'] < version:
+				update_appConfig(s)
+				config = inter.load_appConfig()
+		except:
+			update_appConfig(s)
+			config = inter.load_appConfig()
+		
 
 	#----------------#
 	#   PARAMETERS   #
@@ -55,7 +61,7 @@ def client(s): #return True to continue, False to exit
 		return False # Exit
 	msg = "{}{}#{}#{}#{}#{}\r\n".format(
 		inter.Command.Parameters, p['json'], p['tag_info'], 
-		p['algorithm'], p['tagger'], p['language']) # PRMFalse#True#\r\n
+		p['algorithm'], p['tagger'], p['language']) # PRMFalse#True#...\r\n
 	s.sendall( msg.encode( CODING ))
 	#TODO: controlar error
 	resp = inter.recvline(s).decode(CODING)# OK+ or ER-
@@ -82,11 +88,7 @@ def client(s): #return True to continue, False to exit
 		except:
 			continue # ask again
 	
-
-	# - - - - - #
-	# Test file #
-	# - - - - - #
-	if int(file_type) == 1: 
+	if int(file_type) == 1: # Test file
 		file_num_str = ask_testFile(s, config) #FLE1\r\n
 		if not file_num_str:
 			return False # Exit
@@ -97,68 +99,67 @@ def client(s): #return True to continue, False to exit
 			return False #Exit
 		inter.download_file(s)
 
-	# - - - - - - #
-	# Upload file #
-	# - - - - - - #
 	elif int(file_type) == 2: # Upload file
-		print_menu("upload_file")
-		while True:
-			path = input()
-			if path.find("'")!=-1:
-				path=path[:-1].replace("'", "")
-			action = special_actions(path)
-			if action:
-				if action == -1:
-					return False # Exit
-			elif os.path.isfile(path):
-				break
-			else:
-				print("{} File not found.".format(path))
-		inter.upload_file(s, path)
-		if not inter.isOK(inter.recvline(s).decode(CODING)):
-			return False #exit
-		inter.download_file(s)
+		obtainSendDownload_file( s )
 
-	# - - - - - - - - - - -#
-	# Upload all dir files #
-	# - - - - - - - - - - -#
 	elif int(file_type) == 3: # dir files
-		print_menu("upload_dir")
-		files = []
-		while True:
-			path = input()
-			if path.find("'")!=-1:
-				path=path[:-1].replace("'", "")
-			action = special_actions(path)
-			if action:
-				if action == -1:
-					return False # Exit
-			elif os.path.isdir(path):
-				files = glob.glob(path+"/*")
-				if len(files) == 0:
-					print(" {} dir is empty".format(path))
-				else:
-					break
-			else:
-				print(" {} dir not found.".format(path))
-
-		file_qty = str(len(files))
-		s.sendall("{}{}\r\n".format(inter.Command.Quantity, file_qty).encode(CODING))
-		count = 0
-		for file in files:
-			inter.upload_file(s, file)
-			if not inter.isOK(inter.recvline(s).decode(CODING)):
-				print("Error with '{}' file".format(str(file)))
-			else:
-				inter.download_file(s)
-				count += 1
-				print("Completed {}/{} files".format(str(count), str(file_qty)))
-
+		obtainSendDownload_file( s, directory = True )
 	else:
 		print(" Invalid file type ")
 		return True
-
 	return True
+
+def obtainSendDownload_file(s, directory = False):
+	if directory:
+		print_menu("upload_dir")
+	else:
+		print_menu("upload_file")
+
+	# OBTAIN
+	while True:
+		path = input()
+		if path.find("'")!=-1:
+			path=path[:-1].replace("'", "")
+		action = special_actions(path)
+
+		if action:
+			# special actions
+			if action == -1:
+				return False # Exit
+		elif directory and os.path.isdir(path):
+			# dir 
+			files = glob.glob(path+"/*")
+			if len(files) == 0:
+				print(" {} dir is empty".format(path))
+			else:
+				break
+		elif not directory and os.path.isfile(path):
+			# file
+			break
+		else:
+			# error
+			if directory:
+				print(" {} dir not found.".format(path))
+			else:
+				print("{} File not found.".format(path))
+
+	if not directory:
+		files = [path]
+	#else:
+	#	outdir = "OUT_" + path.split("/")[-1] # TODO: save files inside one new dir
+
+	# SEND
+	file_qty = str(len(files))
+	s.sendall("{}{}\r\n".format(inter.Command.Quantity, file_qty).encode(CODING))
+	count = 0
+	for file in files:
+		inter.upload_file(s, file)
+		if not inter.isOK(inter.recvline(s).decode(CODING)):
+			print("Error with '{}' file".format(str(file)))
+		else:
+			inter.download_file(s)#, outDir=outdir) #TODO: save files in one dir
+			count += 1
+			print("Completed {}/{} files".format(str(count), str(file_qty)))
 
 """	Sections:
 help	title	options test 	upload_file		upload_dir 	parameters """
@@ -266,26 +267,12 @@ def ask_params(config):
 
 	return selections
 
-def load_appConfig(s, current_version):
-	
-	try:
-		file = open('settings.json', 'r')
-		config = json.load(file)
-		if config['version'] < current_version:
-			update_appConfig(s)
-			return load_appConfig(s, -1)#updated version
-		file.close()
-		
-	except:
-		update_appConfig(s)
-		return load_appConfig(s, -1)#updated version
-
-	return config
-
 def update_appConfig(s):
+	print("Updating...")
 	msg = inter.Command.Update+'\r\n'
 	s.sendall(msg.encode(CODING)) # UPD\r\n
 	inter.download_file(s)
+	print("Updated")
 
 def ask_testFile(s, config):
 		print_menu("test")
