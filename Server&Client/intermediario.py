@@ -7,7 +7,7 @@ class Command:
 	OK, Error = ('OK+', 'ER-')
 
 class Parameters:
-	Port = 50018
+	Port = 50010
 	Coding = "UTF-8"
 
 	Error = {

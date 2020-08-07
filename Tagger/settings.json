@@ -26,6 +26,7 @@
         },
         "tagger": {
             "chunk": "Chunking (only english)",
+            "manual": "Use your model",
             "ner": "(ner) Named Entity Recognition",
             "pos": "(pos) Part Of Speech (spanish and english)"
         }
@@ -49,5 +50,5 @@
             }
         }
     },
-    "version": 0.21
+    "version": 0.31
 }

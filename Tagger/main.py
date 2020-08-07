@@ -206,7 +206,7 @@ def print_json(outFile, sentences_listOfModels, taggers):
 					  default: '1'
 
 		String algorithm:  Is the algorithm we want to use. 
-				Options:	'F' = Flair 	'T' = Transformers (experimental) 		'FT' = Both
+				Options:	'F' = Flair 	'T' = Transformers (experimental) 
 					default: 'F'
 
 		String language: Is the language of input document.

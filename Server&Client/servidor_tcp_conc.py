@@ -8,6 +8,7 @@ PORT = inter.Parameters.Port
 CODING = inter.Parameters.Coding
 ER_MSG = inter.Parameters.Error
 APP_PATH = "../Tagger/"
+ManModelDIR = ["./ManualModels"]
 
 def servidor():
 	s = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
@@ -34,6 +35,7 @@ def servidor():
 				copyfile(APP_PATH+"settings.json", "settings.json")
 				config = inter.load_appConfig()
 
+			makeDirs(config)
 			while True:
 				if not service(dialogo, config):
 					clean_files(config)
@@ -62,9 +64,22 @@ def service(s, config):
 		json, tag_info, alg, tag, lan = tuple(msg.split('#')) # parameters
 		json = json == 'true'
 		tag_info = tag_info == 'true'
+		print("- json: ")
+		print(json)
+		print(str(json))
+		print(type(json))
+
+		print("- tag_info: ")
+		print(tag_info)
+		print(str(tag_info))
+		print(type(tag_info))
+
+		if tag == 'manual':
+			modelName = inter.download_file(s, outDir=ManModelDIR[0])
+			tag = ManModelDIR[0]+"/"+ modelName
 
 		resp = inter.Command.OK+"\r\n"
-		s.sendall(resp.encode(CODING)) # OK+
+		s.sendall(resp.encode(CODING)) # OK+ TODO: app response
 
 		msg = inter.recvline(s).decode(CODING)
 		comando = msg[:3]
@@ -118,11 +133,23 @@ def service(s, config):
 
 	return True	
 
+def makeDirs(config):
+	if not os.path.exists(ManModelDIR[0]):
+		os.makedirs(ManModelDIR[0])
+		ManModelDIR[0] = ManModelDIR[0] + "/"
+
+	if not os.path.exists(config['paths']['server_in'][:-1]): #[:-1] para quitar el "/" final
+		os.makedirs(config['paths']['server_in'][:-1])
+
+	if not os.path.exists(config['paths']['server_out'][:-1]):
+		os.makedirs(config['paths']['server_out'][:-1])
+
 def clean_files(config):
 	input_files = glob.glob(config['paths']['server_in'] + "*")
 	output_files = glob.glob(config['paths']['server_out'] + "*")
+	ManModel_files = glob.glob(ManModelDIR[0]+"*")
 
-	files = input_files + output_files
+	files = input_files + output_files + ManModel_files
 
 	for file in files:
 		os.remove(file)

@@ -7,6 +7,7 @@ import glob, os
 PORT = inter.Parameters.Port
 CODING = inter.Parameters.Coding
 ER_MSG = inter.Parameters.Error
+OUTDIR = ["./Output"]
 
 def main():
 	if len( sys.argv ) != 2:
@@ -51,7 +52,10 @@ def client(s): #return True to continue, False to exit
 		except:
 			update_appConfig(s)
 			config = inter.load_appConfig()
-		
+
+	if not os.path.exists(OUTDIR[0]):
+		os.makedirs(OUTDIR[0])
+		OUTDIR[0] = OUTDIR[0] + "/"	
 
 	#----------------#
 	#   PARAMETERS   #
@@ -63,6 +67,11 @@ def client(s): #return True to continue, False to exit
 		inter.Command.Parameters, p['json'], p['tag_info'], 
 		p['algorithm'], p['tagger'], p['language']) # PRMFalse#True#...\r\n
 	s.sendall( msg.encode( CODING ))
+
+	if p['tagger'] == 'manual':
+		if not getSendModel(s):
+			return False # Exit
+
 	#TODO: controlar error
 	resp = inter.recvline(s).decode(CODING)# OK+ or ER-
 	if not inter.isOK(resp):
@@ -88,7 +97,8 @@ def client(s): #return True to continue, False to exit
 		except:
 			continue # ask again
 	
-	if int(file_type) == 1: # Test file
+	if int(file_type) == 1: 
+	# Test file
 		file_num_str = ask_testFile(s, config) #FLE1\r\n
 		if not file_num_str:
 			return False # Exit
@@ -99,10 +109,12 @@ def client(s): #return True to continue, False to exit
 			return False #Exit
 		inter.download_file(s)
 
-	elif int(file_type) == 2: # Upload file
+	elif int(file_type) == 2: 
+	# Upload file
 		obtainSendDownload_file( s )
 
-	elif int(file_type) == 3: # dir files
+	elif int(file_type) == 3: 
+	# dir files
 		obtainSendDownload_file( s, directory = True )
 	else:
 		print(" Invalid file type ")
@@ -117,7 +129,7 @@ def obtainSendDownload_file(s, directory = False):
 
 	# OBTAIN
 	while True:
-		path = input()
+		path = input(" Write file path: ")
 		if path.find("'")!=-1:
 			path=path[:-1].replace("'", "")
 		action = special_actions(path)
@@ -146,7 +158,7 @@ def obtainSendDownload_file(s, directory = False):
 	if not directory:
 		files = [path]
 	#else:
-	#	outdir = "OUT_" + path.split("/")[-1] # TODO: save files inside one new dir
+	#	outdir[0] = "OUT_" + path.split("/")[-1] # TODO: save files inside one new dir
 
 	# SEND
 	file_qty = str(len(files))
@@ -157,7 +169,7 @@ def obtainSendDownload_file(s, directory = False):
 		if not inter.isOK(inter.recvline(s).decode(CODING)):
 			print("Error with '{}' file".format(str(file)))
 		else:
-			inter.download_file(s)#, outDir=outdir) #TODO: save files in one dir
+			inter.download_file(s, outDir=OUTDIR[0])
 			count += 1
 			print("Completed {}/{} files".format(str(count), str(file_qty)))
 
@@ -168,6 +180,7 @@ def print_menu(section):
 	if section == "title":
 		print("\n{}".format("-"*40))
 		print("{:^40}".format("NLP-TAGGER"))
+		print("{:^40}".format("(with Flair)"))
 		print("{}".format("-"*40))
 		print("\nWrite the option's id and press <ENTER> to confirm.")
 		print("<q> to quit. \t <h> for help.\n")
@@ -298,6 +311,29 @@ def ask_testFile(s, config):
 
 		test_file = str(test_file) #range [1,...) to [0,...) of the array
 		return test_file		
+
+def getSendModel(s):
+	print(" You have choosed manual model. ")
+	# Get model
+	while True:
+		path = input(" Insert here the model's path:\t")
+		if path.find("'")!=-1:
+			path=path[:-1].replace("'", "")
+		action = special_actions(path)
+
+		if action:
+			# special actions
+			if action == -1:
+				return False # Exit
+		elif os.path.isfile(path):
+			# file
+			break
+		else:
+			# error
+			print("{} File not found.".format(path))
+	# Send
+	inter.upload_file(s, path)
+	return True
 
 if "__main__" == __name__:
 	main()
