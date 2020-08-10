@@ -25,15 +25,16 @@
             "true": "Yes. Write extra info about tagger (only txt)"
         },
         "tagger": {
-            "chunk": "Chunking (only english)",
-            "manual": "Use your model",
+            "chunk": "(Chunk) (only english)",
+            "manual": "(manual) Use your own model",
             "ner": "(ner) Named Entity Recognition",
             "pos": "(pos) Part Of Speech (spanish and english)"
         }
     },
     "paths": {
         "server_in": "../tests/srvIN/",
-        "server_out": "../tests/srvOUT/"
+        "server_out": "../tests/srvOUT/",
+        "tests": "../tests/Input/"
     },
     "test_files": [
         "english_text.txt",
@@ -50,5 +51,5 @@
             }
         }
     },
-    "version": 0.31
+    "version": 0.335
 }

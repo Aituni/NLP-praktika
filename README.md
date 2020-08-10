@@ -26,8 +26,8 @@ Results (trfm_eu):
 - F1-score (macro) 0.6118
 
 Results (time_en):
-- F1-score (micro) 0.8297
-- F1-score (macro) 0.8297
+- F1-score (micro) 0.8375
+- F1-score (macro) 0.8375
 
 # Uso
 

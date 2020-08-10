@@ -1,8 +1,10 @@
 import json, sys
-
+# this script makes settings.json file running "python3 settings.py"
+# you can see the version using "python3 settings.py v"
 class config:
 
-	VERSION = 0.31
+	# UPDATE AND EXECUTE AFTER ANY CHANGE 
+	VERSION = 0.335
 
 	# key : "explicacion"
 	params = {
@@ -27,8 +29,8 @@ class config:
 		'tagger' : {
 			'ner' : '(ner) Named Entity Recognition',
 			'pos' : '(pos) Part Of Speech (spanish and english)',
-			'chunk' : 'Chunking (only english)',
-			'manual' : 'Use your model'
+			'chunk' : '(Chunk) (only english)',
+			'manual' : '(manual) Use your own model'
 		},
 
 		'language' : {
@@ -43,7 +45,8 @@ class config:
 	## PATHS
 
 	paths = { 	'server_in': "../tests/srvIN/",
-				'server_out': "../tests/srvOUT/" }
+				'server_out': "../tests/srvOUT/",
+				'tests': "../tests/Input/" }
 
 	## json
 

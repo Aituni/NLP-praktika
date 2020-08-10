@@ -2,7 +2,7 @@ import json
 
 class Command:
 	File, Size, Parameters, Update = ("FLE", "SZE", "PRM", "UPD")
-	Close, Version, Quantity = ("CLS", "VRS", "QTY")
+	Close, Version, Quantity, Model = ("CLS", "VRS", "QTY", "MDL")
 	#resp
 	OK, Error = ('OK+', 'ER-')
 
@@ -12,6 +12,9 @@ class Parameters:
 
 	Error = {
 			0:" inserted value is not valid. insert valid one ",
+			1:" document not processed correctly",
+			2:" unknown Error",
+			3:" error with client/server connection"
 		 }
 
 #devuelve el paquete recibido con el comando y sin la marca de fin.
@@ -70,6 +73,7 @@ def upload_file(s, path):
 
 	s.sendall(contenido) # file
 	file.close()
+	print("\n File uploaded")
 
 def isOK(msg):
 	comand = msg[:3]
@@ -77,11 +81,17 @@ def isOK(msg):
 	if comand == Command.OK:
 		return True
 	elif comand == Command.Error:
-		# TODO: print error with code 'rest'
+		try:
+			code = int(rest)
+			error = Parameters.Error[code]
+		except:
+			error = Parameters.Error[2]
+		print(error)
 		return False
 
-def load_appConfig():
-	file = open('settings.json', 'r')
+def load_appConfig(directory=''):
+	file = open(directory+'settings.json', 'r')
 	config = json.load(file)
 	file.close()
 	return config
+

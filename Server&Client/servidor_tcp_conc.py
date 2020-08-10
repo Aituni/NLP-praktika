@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
-import socket, os, glob
+import socket, os, glob, signal, sys
 import intermediario as inter
-from shutil import copyfile
+from shutil import copyfile, rmtree
 
 PORT = inter.Parameters.Port
 CODING = inter.Parameters.Coding
 ER_MSG = inter.Parameters.Error
 APP_PATH = "../Tagger/"
-ManModelDIR = ["./ManualModels"]
+ManModelDIR = ["./ManualModels/"]
 
 def servidor():
 	s = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
@@ -17,6 +17,16 @@ def servidor():
 	s.listen( 5 )
 
 	config_version = 0
+	main_pid = os.fork()
+
+	if main_pid:
+		#dad
+		while True:
+			if input() == "q":
+				clean_files(inter.load_appConfig(), closemode = True)
+				os.kill(main_pid, signal.SIGKILL) #or signal.SIGTERM 
+				s.close()
+				exit(0)
 
 	while True:
 		dialogo, dir_cli = s.accept()
@@ -29,11 +39,8 @@ def servidor():
 		else:
 			#son
 			s.close()
-			try:
-				config = inter.load_appConfig()
-			except:
-				copyfile(APP_PATH+"settings.json", "settings.json")
-				config = inter.load_appConfig()
+
+			config = inter.load_appConfig(APP_PATH) # use config directly from Tagger folder (updated config)
 
 			makeDirs(config)
 			while True:
@@ -47,6 +54,7 @@ def servidor():
 
 # return True if exit. else, false
 def service(s, config):
+	config['params']['manTagger'] = ""
 	
 	# enviar version
 	resp = inter.Command.Version+str(config['version'])+"\r\n"# VRS0.2\r\n
@@ -64,19 +72,14 @@ def service(s, config):
 		json, tag_info, alg, tag, lan = tuple(msg.split('#')) # parameters
 		json = json == 'true'
 		tag_info = tag_info == 'true'
-		print("- json: ")
-		print(json)
-		print(str(json))
-		print(type(json))
-
-		print("- tag_info: ")
-		print(tag_info)
-		print(str(tag_info))
-		print(type(tag_info))
 
 		if tag == 'manual':
 			modelName = inter.download_file(s, outDir=ManModelDIR[0])
 			tag = ManModelDIR[0]+"/"+ modelName
+			modelID = inter.recvline(s)[3:]
+			config['params']['manTagger'][modelID] = tag # local config
+		elif tag in config['params']['manTagger']:
+			tag = config['params']['manTagger'][tag]
 
 		resp = inter.Command.OK+"\r\n"
 		s.sendall(resp.encode(CODING)) # OK+ TODO: app response
@@ -92,19 +95,20 @@ def service(s, config):
 			#test files
 			fileNum = int(msg[3:])#quitar comando
 			filename = config['test_files'][fileNum]
+			filepath = config['paths']['tests']+filename
 			files_qty = 1
 
 		elif comando == inter.Command.Quantity:
 			# TODO: control de errores
 			files_qty = int(msg[3:])
 			filename = inter.download_file(s, outDir=config['paths']['server_in'])
+			filepath = config['paths']['server_in']+filename
 
 		for i in range(files_qty):
 			if i > 0:#test file dont need to download
 				filename = inter.download_file(s, outDir=config['paths']['server_in']) 
-			filepath = config['paths']['server_in']+filename
+				filepath = config['paths']['server_in']+filename
 			print('Ejecucion de aplicacion:')
-			#os.path.basename(path) # rm folders form path
 			(outFilename, ext) = os.path.splitext(filename)
 			outFilename = "OUT_"+ outFilename
 			outFilepath = config['paths']['server_out']+outFilename
@@ -116,27 +120,34 @@ def service(s, config):
 				msg = 'python3 {}main.py {} {} {} {} {} {} {}'.format(
 					APP_PATH, filepath, outFilepath, alg, lan, tag, json, tag_info )
 				os.system(msg)
-				exit(0)
+				sys.exit()
 			else:
-				os.wait() # wait until son end processing file
-
+				try:
+					# wait return a tuple, killed process pid is the first one
+					while os.wait()[0] != pid: # wait until son end processing file
+						continue
+				except:
+					pass # no more process
 				if json:
 					formato = ".json"
 				else:
 					formato = ".tsv"
 				outFilepath = outFilepath+formato
 
+				#if os.path.isfile(outFilepath):
 				resp = inter.Command.OK+"\r\n"
-				s.sendall(resp.encode(CODING)) # OK+
+				s.sendall(resp.encode(CODING))
 
 				inter.upload_file(s, outFilepath)
+				#else:
+					#resp = inter.Command.Error+"1\r\n" #error 1
+					#s.sendall(resp.encode(CODING))
 
 	return True	
 
 def makeDirs(config):
 	if not os.path.exists(ManModelDIR[0]):
 		os.makedirs(ManModelDIR[0])
-		ManModelDIR[0] = ManModelDIR[0] + "/"
 
 	if not os.path.exists(config['paths']['server_in'][:-1]): #[:-1] para quitar el "/" final
 		os.makedirs(config['paths']['server_in'][:-1])
@@ -144,15 +155,20 @@ def makeDirs(config):
 	if not os.path.exists(config['paths']['server_out'][:-1]):
 		os.makedirs(config['paths']['server_out'][:-1])
 
-def clean_files(config):
-	input_files = glob.glob(config['paths']['server_in'] + "*")
-	output_files = glob.glob(config['paths']['server_out'] + "*")
-	ManModel_files = glob.glob(ManModelDIR[0]+"*")
+def clean_files(config, closemode = False):
+	if closemode:
+		rmtree(config['paths']['server_in'], ignore_errors=True)
+		rmtree(config['paths']['server_out'], ignore_errors=True)
+		rmtree(ManModelDIR[0][:-1], ignore_errors=True)
+	else:
+		input_files = glob.glob(config['paths']['server_in'] + "*")
+		output_files = glob.glob(config['paths']['server_out'] + "*")
+		ManModel_files = glob.glob(ManModelDIR[0]+"*")
 
-	files = input_files + output_files + ManModel_files
+		files = input_files + output_files + ManModel_files
 
-	for file in files:
-		os.remove(file)
+		for file in files:
+			os.remove(file)
 
 if "__main__" == __name__:
 	servidor()

@@ -256,8 +256,10 @@ def main(
 			inFile = open(in_filePath, "r")
 			file_cases(inFile, outFile, json, flair_model, tagger_info=tag_info) # tf, fl
 		finally:
-			outFile.close()
-			inFile.close()
+			if outFile:
+				outFile.close()
+			if inFile:
+				inFile.close()
 		print ("\nEnded tagging process.\n")
 
 

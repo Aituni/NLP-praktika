@@ -7,7 +7,8 @@ import glob, os
 PORT = inter.Parameters.Port
 CODING = inter.Parameters.Coding
 ER_MSG = inter.Parameters.Error
-OUTDIR = ["./Output"]
+OUTDIR = ["./Output/"]
+CONFIG = [0]
 
 def main():
 	if len( sys.argv ) != 2:
@@ -44,23 +45,27 @@ def client(s): #return True to continue, False to exit
 		return False
 	else:
 		version = float(msg[3:])
+		print(str(version))
 		try:
-			config = inter.load_appConfig()
-			if config['version'] < version:
+			if not CONFIG[0]:
+				CONFIG[0] = inter.load_appConfig()
+				print(str(CONFIG[0]['version']))
+			if CONFIG[0]['version'] < version:
 				update_appConfig(s)
-				config = inter.load_appConfig()
+				CONFIG[0] = inter.load_appConfig()
 		except:
 			update_appConfig(s)
-			config = inter.load_appConfig()
+			CONFIG[0] = inter.load_appConfig()
 
+		print(str(CONFIG[0]['version']))
+		
 	if not os.path.exists(OUTDIR[0]):
 		os.makedirs(OUTDIR[0])
-		OUTDIR[0] = OUTDIR[0] + "/"	
 
 	#----------------#
 	#   PARAMETERS   #
 	#----------------#
-	p = ask_params(config)
+	p = ask_params()
 	if not p:
 		return False # Exit
 	msg = "{}{}#{}#{}#{}#{}\r\n".format(
@@ -99,7 +104,7 @@ def client(s): #return True to continue, False to exit
 	
 	if int(file_type) == 1: 
 	# Test file
-		file_num_str = ask_testFile(s, config) #FLE1\r\n
+		file_num_str = ask_testFile(s) #FLE1\r\n
 		if not file_num_str:
 			return False # Exit
 		msg = "{}{}\r\n".format(inter.Command.File, file_num_str) # FLE1\r\n
@@ -107,7 +112,7 @@ def client(s): #return True to continue, False to exit
 
 		if not inter.isOK(inter.recvline(s).decode(CODING)):
 			return False #Exit
-		inter.download_file(s)
+		inter.download_file(s, outDir=OUTDIR[0])
 
 	elif int(file_type) == 2: 
 	# Upload file
@@ -157,8 +162,11 @@ def obtainSendDownload_file(s, directory = False):
 
 	if not directory:
 		files = [path]
-	#else:
-	#	outdir[0] = "OUT_" + path.split("/")[-1] # TODO: save files inside one new dir
+		outdir = OUTDIR[0]
+	else:
+		outdir = OUTDIR[0] + "OUT_" + path.split("/")[-1] + "/" #TOTEST
+		if not os.path.isdir(outdir):
+			os.makedirs(outdir)
 
 	# SEND
 	file_qty = str(len(files))
@@ -169,7 +177,7 @@ def obtainSendDownload_file(s, directory = False):
 		if not inter.isOK(inter.recvline(s).decode(CODING)):
 			print("Error with '{}' file".format(str(file)))
 		else:
-			inter.download_file(s, outDir=OUTDIR[0])
+			inter.download_file(s, outDir=outdir)
 			count += 1
 			print("Completed {}/{} files".format(str(count), str(file_qty)))
 
@@ -183,10 +191,8 @@ def print_menu(section):
 		print("{:^40}".format("(with Flair)"))
 		print("{}".format("-"*40))
 		print("\nWrite the option's id and press <ENTER> to confirm.")
-		print("<q> to quit. \t <h> for help.\n")
+		print("\t<q> to quit. \n")
 	
-	elif section == "help": #help
-		print("\n####  HELP:  ####")
 		#TODO
 	elif section == "options":
 		print("\n####  TAGGING FILE:  ####")
@@ -200,7 +206,7 @@ def print_menu(section):
 		print("\nRESTARTING")
 		for i in range(3):#animacion prescindible
 			time.sleep(0.5) #seconds
-			print(".")
+			print("\r.")
 		time.sleep(1) #seconds
 	elif section == "turn_off":
 		print("\n Turning off. Bye.")
@@ -210,7 +216,7 @@ def print_menu(section):
 		print("Put the path of the file you want to analyze.")
 
 	elif section == "upload_dir":
-		print("\n####  UPLOAD FILE:  ####")
+		print("\n####  UPLOAD DIRECTORY:  ####")
 		print("Put the path of the dir with all the files you want to analyze.")
 
 	elif section == "test":
@@ -225,24 +231,20 @@ def print_menu(section):
 # text is (return x!=0, as True) or not (return 0, as False) an especial action
 def special_actions(text, activate_actions = True): 
 	resul = 0
-	if text == 'h':
-		if activate_actions:
-			print_menu("help")
-		resul = 1
-	if text == 'q':
+	if text == 'q':#exit
 		resul = -1
 	return resul
 
-def ask_params(config):
+def ask_params():
 
-	params = config['params']
+	params = CONFIG[0]['params']
 
 	def ask_param(parameter):
-		print("\n## {:^20} ##\n".format(parameter))
+		print("\n## {:^15} ##\n".format(parameter))
 		k = 1
 		opt_KeyDict={}
 		for opt in params[parameter]:
-			print( '\t{}. {}'.format(str(k), str(params[parameter][opt])) )
+			print( '  {}. {}'.format(str(k), str(params[parameter][opt])) )
 			opt_KeyDict[k] = opt
 			k+=1
 
@@ -268,7 +270,7 @@ def ask_params(config):
 			return ask_params(parameter) # ask again
 
 	print_menu("parameters")
-	print("NOTE: \n\tJson include following tags:"+str(config['json_taggers']))
+	print("NOTE: \n   Json include following tags:"+str(CONFIG[0]['json_taggers']))
 	parameters = params.keys()
 	selections = {}
 	for param in parameters:
@@ -281,15 +283,15 @@ def ask_params(config):
 	return selections
 
 def update_appConfig(s):
-	print("Updating...")
+	print(" Updating...")
 	msg = inter.Command.Update+'\r\n'
 	s.sendall(msg.encode(CODING)) # UPD\r\n
 	inter.download_file(s)
-	print("Updated")
+	print("\n Updated")
 
-def ask_testFile(s, config):
+def ask_testFile(s):
 		print_menu("test")
-		files = config['test_files']
+		files = CONFIG[0]['test_files']
 		for i in range(len(files)):
 			print("{}.\t{}".format(str(i+1), str(files[i])))
 
@@ -300,20 +302,20 @@ def ask_testFile(s, config):
 				if action == -1:
 					return False # Exit
 				else:
-					ask_testFile(s, config) # ask again
+					ask_testFile(s) # ask again
 			else:
 				test_file = int(test_file) - 1
 				if test_file >= len(files) or test_file < 0:
 					print( ER_MSG[0] )
-					return ask_testFile(s, config) # ask again
+					return ask_testFile(s) # ask again
 		except:
-			return ask_testFile(s, config) # ask again
+			return ask_testFile(s) # ask again
 
 		test_file = str(test_file) #range [1,...) to [0,...) of the array
 		return test_file		
 
 def getSendModel(s):
-	print(" You have choosed manual model. ")
+	print("\n NOTE:  Don't worry if choosen values are not the same of your model's. \n")
 	# Get model
 	while True:
 		path = input(" Insert here the model's path:\t")
@@ -333,6 +335,10 @@ def getSendModel(s):
 			print("{} File not found.".format(path))
 	# Send
 	inter.upload_file(s, path)
+	modelID = path.split("/")
+	modelID = modelID[-2] +"/"+ modelID[-1] # dir/file : to prevent files with the same name
+	s.sendall("{}{}\r\n".format(inter.Command.Model, modelID).encode(CODING))
+	CONFIG[0]['params']['tagger'][modelID] = path # local config
 	return True
 
 if "__main__" == __name__:
