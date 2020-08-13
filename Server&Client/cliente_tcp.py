@@ -45,19 +45,15 @@ def client(s): #return True to continue, False to exit
 		return False
 	else:
 		version = float(msg[3:])
-		print(str(version))
 		try:
 			if not CONFIG[0]:
-				CONFIG[0] = inter.load_appConfig()
-				print(str(CONFIG[0]['version']))
+				CONFIG[0] = inter.load_appConfig()		
 			if CONFIG[0]['version'] < version:
 				update_appConfig(s)
 				CONFIG[0] = inter.load_appConfig()
 		except:
 			update_appConfig(s)
 			CONFIG[0] = inter.load_appConfig()
-
-		print(str(CONFIG[0]['version']))
 		
 	if not os.path.exists(OUTDIR[0]):
 		os.makedirs(OUTDIR[0])
@@ -191,7 +187,7 @@ def print_menu(section):
 		print("{:^40}".format("(with Flair)"))
 		print("{}".format("-"*40))
 		print("\nWrite the option's id and press <ENTER> to confirm.")
-		print("\t<q> to quit. \n")
+		print("   <q> to quit. \n")
 	
 		#TODO
 	elif section == "options":
@@ -242,32 +238,33 @@ def ask_params():
 	def ask_param(parameter):
 		print("\n## {:^15} ##\n".format(parameter))
 		k = 1
-		opt_KeyDict={}
+		opt_KeyDict={} # dictionary with numbers (as key) and his option's keys
 		for opt in params[parameter]:
-			print( '  {}. {}'.format(str(k), str(params[parameter][opt])) )
+			print( '  {}. {}'.format( str(k), str(params[parameter][opt])) )
 			opt_KeyDict[k] = opt
 			k+=1
-
-		selection = input('\nSelect one option:\t')
-		try:
-			action = special_actions(selection)
-			if action:
-				if action == -1:
-					return False # Exit
+		while True:
+			selection = input('\nSelect one option:\t')
+			try:
+				action = special_actions(selection)
+				if action:
+					if action == -1:
+						return False # Exit
+					else:
+						continue # ask again
 				else:
-					return ask_params(parameter) # ask again
-			else:
-				if int(selection) >= k or int(selection) < 0:
-					print( ER_MSG[0] )
-					return ask_params(parameter) # ask again
-		except:
-			return ask_param(parameter) # ask again
+					if int(selection) >= k or int(selection) < 0:
+						#invalid selection range
+						print( ER_MSG[0] )
+						continue # ask again
+			except:
+				continue # ask again
 
-		if int(selection) in opt_KeyDict:
-			return opt_KeyDict[int(selection)]
-		else:
-			print( ER_MSG[0] )
-			return ask_params(parameter) # ask again
+			if int(selection) in opt_KeyDict:
+				return opt_KeyDict[int(selection)]
+			else:
+				print( ER_MSG[0] )
+				continue # ask again
 
 	print_menu("parameters")
 	print("NOTE: \n   Json include following tags:"+str(CONFIG[0]['json_taggers']))
@@ -315,7 +312,9 @@ def ask_testFile(s):
 		return test_file		
 
 def getSendModel(s):
-	print("\n NOTE:  Don't worry if choosen values are not the same of your model's. \n")
+	print("\n NOTE:  Don't worry if choosen values are not the same of your model's. ")
+	print("\n NOTE2: You can use the model multiple times, it will be saved in the server temporally, ")
+	print("             until you close session. Then it will be removed from the server.\n")
 	# Get model
 	while True:
 		path = input(" Insert here the model's path:\t")
@@ -333,12 +332,13 @@ def getSendModel(s):
 		else:
 			# error
 			print("{} File not found.".format(path))
+	print("\n Upload may take a while")
 	# Send
 	inter.upload_file(s, path)
 	modelID = path.split("/")
 	modelID = modelID[-2] +"/"+ modelID[-1] # dir/file : to prevent files with the same name
 	s.sendall("{}{}\r\n".format(inter.Command.Model, modelID).encode(CODING))
-	CONFIG[0]['params']['tagger'][modelID] = path # local config
+	CONFIG[0]['params']['tagger'][modelID] = path + "(temporal)" # local config
 	return True
 
 if "__main__" == __name__:

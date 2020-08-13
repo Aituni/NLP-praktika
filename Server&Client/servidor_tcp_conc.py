@@ -54,7 +54,6 @@ def servidor():
 
 # return True if exit. else, false
 def service(s, config):
-	config['params']['manTagger'] = ""
 	
 	# enviar version
 	resp = inter.Command.Version+str(config['version'])+"\r\n"# VRS0.2\r\n
@@ -70,18 +69,22 @@ def service(s, config):
 	elif msg[:3] == inter.Command.Parameters:
 		msg = msg[3:]#quitar comando
 		json, tag_info, alg, tag, lan = tuple(msg.split('#')) # parameters
-		json = json == 'true'
+		json = json == 'true' #string to bool
 		tag_info = tag_info == 'true'
+		resp = ""
 
 		if tag == 'manual':
 			modelName = inter.download_file(s, outDir=ManModelDIR[0])
-			tag = ManModelDIR[0]+"/"+ modelName
-			modelID = inter.recvline(s)[3:]
-			config['params']['manTagger'][modelID] = tag # local config
-		elif tag in config['params']['manTagger']:
-			tag = config['params']['manTagger'][tag]
-
-		resp = inter.Command.OK+"\r\n"
+			tag = ManModelDIR[0]+ modelName
+			modelID = inter.recvline(s)[3:].decode(CODING)
+			config['params']['tagger'][modelID] = tag # local config
+		elif tag.find("/") != -1:# if tag have "/", then is a temporal model
+			if tag in config['params']['tagger']:
+				tag = config['params']['tagger'][tag]
+			else:
+				resp = inter.Command.Error+"4\r\n"#model not found
+		if not resp:
+			resp = inter.Command.OK+"\r\n"
 		s.sendall(resp.encode(CODING)) # OK+ TODO: app response
 
 		msg = inter.recvline(s).decode(CODING)

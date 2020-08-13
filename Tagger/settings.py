@@ -12,13 +12,13 @@ class config:
 		# BOOLEANS
 		'json' : {
 			True : '(.json) Print tags in json file (only english using Flair)',
-			False : '(.tsv) Print in CoNLL format (tsv)'
+			False : '(.tsv) Print in CoNLL format'
 			
 		},
 
 		'tag_info' : {
-			True : 'Yes. Write extra info about tagger (only txt)',
-			False : 'No. Do not write extra info about tagger (only txt)'
+			True : 'Yes. Write extra info about tagger (only tsv)',
+			False : 'No. Do not write extra info about tagger (only tsv)'
 		},
 
 		'algorithm' : {

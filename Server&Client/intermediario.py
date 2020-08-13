@@ -14,7 +14,8 @@ class Parameters:
 			0:" inserted value is not valid. insert valid one ",
 			1:" document not processed correctly",
 			2:" unknown Error",
-			3:" error with client/server connection"
+			3:" error with client/server connection",
+			4:" model not found."
 		 }
 
 #devuelve el paquete recibido con el comando y sin la marca de fin.

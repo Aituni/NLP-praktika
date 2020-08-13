@@ -20,11 +20,11 @@ def obtain_model(algorithm, tagger, language, settings):
 	code, fl_path = obtain_dir(algorithm, tagger, language)
 	if code[0] == -1: #ERROR
 		return code, fl_path
-	make_dirs(fl_path)
 
 	### file ###
 	code, fl_path = official_or_manual_models(code, fl_path, tagger)
 	if code[0] != 0:# not found official or manual path
+		make_dirs(fl_path)
 		code, fl_path = obtain_FilePath(code, fl_path) # get local model, on the path
 		if code[0] != 0: # file not found locally
 			download(code, fl_path)#download model if is accesible
@@ -94,13 +94,11 @@ def obtain_dir(algorithm, tagger, language):
 """
 def make_dirs(fl_path):
 	fl_exist = True
-	tf_exist = True
 	if fl_path:
 		fl_exist = os.path.isdir(fl_path)
 
-	if not (fl_exist and tf_exist): #si los directorios no existen, crearlos
-		if fl_path:
-			os.makedirs(fl_path, exist_ok = True)
+	if not fl_exist: #si los directorios no existen, crearlos
+		os.makedirs(fl_path, exist_ok = True)
 """
 	official_or_manual_models(...):
 		if it exists an official model for wanted tagger, it will choose it.
