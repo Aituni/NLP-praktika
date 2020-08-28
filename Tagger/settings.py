@@ -4,7 +4,7 @@ import json, sys
 class config:
 
 	# UPDATE AND EXECUTE AFTER ANY CHANGE 
-	VERSION = 0.335
+	VERSION = 0.34
 
 	# key : "explicacion"
 	params = {
@@ -17,7 +17,7 @@ class config:
 		},
 
 		'tag_info' : {
-			True : 'Yes. Write extra info about tagger (only tsv)',
+			True : 'Yes. Write visually pretty and extra info about tagger (only tsv)',
 			False : 'No. Do not write extra info about tagger (only tsv)'
 		},
 
@@ -62,7 +62,7 @@ class config:
 		'Flair': {
 			'ner':{
 				'es':'',
-				'en':''
+				'en':'' 
 			},
 			'pos':{
 				'en':''

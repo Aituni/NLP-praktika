@@ -30,7 +30,7 @@ def servidor():
 
 	while True:
 		dialogo, dir_cli = s.accept()
-		print( "Cliente conectado desde {}:{}.".format( dir_cli[0], dir_cli[1] ) )
+		print( "Client conected from {} : {}.".format( dir_cli[0], dir_cli[1] ) )
 		
 		pid = os.fork()
 		if pid:
@@ -47,7 +47,7 @@ def servidor():
 				if not service(dialogo, config):
 					clean_files(config)
 					break
-			print( "Solicitud de cierre de conexión recibida." )
+			print( "Connection closure request received from {} : {}".format( dir_cli[0], dir_cli[1] ) )
 			dialogo.close()
 			exit( 0 )
 	s.close()
@@ -55,16 +55,16 @@ def servidor():
 # return True if exit. else, false
 def service(s, config):
 	
-	# enviar version
-	resp = inter.Command.Version+str(config['version'])+"\r\n"# VRS0.2\r\n
-	s.sendall(resp.encode(CODING))
-
 	msg = inter.recvline(s).decode(CODING)
 	if msg[:3] == inter.Command.Close:
 		return False
 	elif msg[:3] == inter.Command.Update:
-		inter.upload_file(s, APP_PATH+'settings.json')
-		#os.remove('settings.json') #TODO
+		if msg[3:] == "v":
+			# enviar version
+			resp = inter.Command.OK+str(config['version'])+"\r\n"# VRS0.2\r\n
+			s.sendall(resp.encode(CODING))
+		else:
+			inter.upload_file(s, APP_PATH+'settings.json')
 
 	elif msg[:3] == inter.Command.Parameters:
 		msg = msg[3:]#quitar comando
@@ -72,12 +72,17 @@ def service(s, config):
 		json = json == 'true' #string to bool
 		tag_info = tag_info == 'true'
 		resp = ""
-
+		# Select/Download model
 		if tag == 'manual':
 			modelName = inter.download_file(s, outDir=ManModelDIR[0])
 			tag = ManModelDIR[0]+ modelName
-			modelID = inter.recvline(s)[3:].decode(CODING)
-			config['params']['tagger'][modelID] = tag # local config
+			model_msg = inter.recvline(s).decode(CODING)
+			if model_msg[:3]==inter.Command.Model:
+				modelID = model_msg[3:]
+				config['params']['tagger'][modelID] = tag # local config
+			else:
+				resp = inter.Command.Error+"5\r\n"#incorrect command
+
 		elif tag.find("/") != -1:# if tag have "/", then is a temporal model
 			if tag in config['params']['tagger']:
 				tag = config['params']['tagger'][tag]
@@ -106,12 +111,15 @@ def service(s, config):
 			files_qty = int(msg[3:])
 			filename = inter.download_file(s, outDir=config['paths']['server_in'])
 			filepath = config['paths']['server_in']+filename
+		else:
+			resp = inter.Command.Error+"5\r\n"#incorrect command
+			s.sendall(resp.encode(CODING)) # OK+ TODO: app response
 
 		for i in range(files_qty):
 			if i > 0:#test file dont need to download
 				filename = inter.download_file(s, outDir=config['paths']['server_in']) 
 				filepath = config['paths']['server_in']+filename
-			print('Ejecucion de aplicacion:')
+			#print('Ejecucion de aplicacion:')
 			(outFilename, ext) = os.path.splitext(filename)
 			outFilename = "OUT_"+ outFilename
 			outFilepath = config['paths']['server_out']+outFilename
@@ -137,14 +145,18 @@ def service(s, config):
 					formato = ".tsv"
 				outFilepath = outFilepath+formato
 
-				#if os.path.isfile(outFilepath):
-				resp = inter.Command.OK+"\r\n"
-				s.sendall(resp.encode(CODING))
+				if os.path.isfile(outFilepath):
+					resp = inter.Command.OK+"\r\n"
+					s.sendall(resp.encode(CODING))
 
-				inter.upload_file(s, outFilepath)
-				#else:
-					#resp = inter.Command.Error+"1\r\n" #error 1
-					#s.sendall(resp.encode(CODING))
+					inter.upload_file(s, outFilepath)
+				else:
+					#file does not exist, could be model error,
+					resp = inter.Command.Error+"1\r\n" #error 1
+					s.sendall(resp.encode(CODING))
+	else:
+		resp = inter.Command.Error+"5\r\n"#incorrect command
+		s.sendall(resp.encode(CODING)) # OK+ TODO: app response
 
 	return True	
 

@@ -10,7 +10,7 @@
             "Transformers": "Transformers (only ner, Experimental)"
         },
         "json": {
-            "false": "(.tsv) Print in CoNLL format (tsv)",
+            "false": "(.tsv) Print in CoNLL format",
             "true": "(.json) Print tags in json file (only english using Flair)"
         },
         "language": {
@@ -21,8 +21,8 @@
             "ga": "Gallego"
         },
         "tag_info": {
-            "false": "No. Do not write extra info about tagger (only txt)",
-            "true": "Yes. Write extra info about tagger (only txt)"
+            "false": "No. Do not write extra info about tagger (only tsv)",
+            "true": "Yes. Write visually pretty and extra info about tagger (only tsv)"
         },
         "tagger": {
             "chunk": "(Chunk) (only english)",
@@ -51,5 +51,5 @@
             }
         }
     },
-    "version": 0.335
+    "version": 0.34
 }

@@ -93,12 +93,9 @@ def obtain_dir(algorithm, tagger, language):
 	If the model's path does not exist. it will create it.
 """
 def make_dirs(fl_path):
-	fl_exist = True
 	if fl_path:
-		fl_exist = os.path.isdir(fl_path)
-
-	if not fl_exist: #si los directorios no existen, crearlos
-		os.makedirs(fl_path, exist_ok = True)
+		if not os.path.isdir(fl_path): #si los directorios no existen, crearlos
+			os.makedirs(fl_path, exist_ok = True)
 """
 	official_or_manual_models(...):
 		if it exists an official model for wanted tagger, it will choose it.

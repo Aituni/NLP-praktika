@@ -37,23 +37,22 @@ def client(s): #return True to continue, False to exit
 	#----------------------#
 	#   VERSION / UPDATE   #
 	#----------------------#
-	#TODO: app exit when download for the first time settings.json
+	s.sendall("{}v\r\n".format(inter.Command.Update).encode(CODING))# ask for last version num(float)
 	msg = inter.recvline(s).decode(CODING)# VRS0.2\r\n
-	comando = msg[:3]
-	if comando != inter.Command.Version:
-		print("Error: Unexpected {} command, {} expected".format(comando, inter.Command.Version))
+
+	if not inter.isOK(msg):
 		return False
-	else:
-		version = float(msg[3:])
-		try:
-			if not CONFIG[0]:
-				CONFIG[0] = inter.load_appConfig()		
-			if CONFIG[0]['version'] < version:
-				update_appConfig(s)
-				CONFIG[0] = inter.load_appConfig()
-		except:
+		
+	version = float(msg[3:])
+	try:
+		if not CONFIG[0]:
+			CONFIG[0] = inter.load_appConfig()		
+		if CONFIG[0]['version'] < version:
 			update_appConfig(s)
 			CONFIG[0] = inter.load_appConfig()
+	except:
+		update_appConfig(s)
+		CONFIG[0] = inter.load_appConfig()
 		
 	if not os.path.exists(OUTDIR[0]):
 		os.makedirs(OUTDIR[0])

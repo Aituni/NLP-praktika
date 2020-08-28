@@ -1,192 +1,7 @@
-import flair_tagging as fl
-import transformer_tagging as tf
+import sys, os
 import preparations as prep
+import file_tagging as ftag
 import json
-import sys
-
-"""
-	void file_cases(..):
-
-	This function analyze the sentences of 'inFile', with selected 'tf_tagger' and 'fl_tagger'.
-	The results will be writed on the 'outFile', with chosen format in 'json'
-
-	Parameters:
-		File inFile: Is the file where sentences will be readed
-
-		File outFile: Is the file where sentences will be writed, with the results
-
-		Bool json: Is the output format. True value, will make output be writed in json format.
-					False, will make output be writed in tsv format with CoNLL style.
-
-		String tf_tagger: model name or path for tagging or classification using transformers.
-							put	empty string ("") if you dont want to clasify with transformers.
-		String fl_tagger: model name or path for tagging or classification using flair.
-							put	empty string ("") if you dont want to clasify with flair.
-"""
-def file_cases(inFile, outFile, json, fl_tagger, tagger_info=True):
-	
-	if tagger_info:
-		outFile.write("Tagger: "+fl_tagger+ "\n")
-
-	# Leemos el texto
-	text = inFile.read()
-
-	if tagger_info:
-		outFile.write("\nFLAIR: \n\n")
-	if json:
-		# to add more taggers, just add tagger name to 'json_taggers' array in settings.py
-		results = []
-		taggers = load_appConfig()['json_taggers']
-		for tagger in taggers:
-			results.append(fl.tag_listSentences(text, tagger))
-		print_json(outFile, results, taggers)
-	else:
-		sentences = fl.tag_listSentences(text, fl_tagger)
-		#print(sentences[0])
-		print_CoNLL(outFile, sentences, fl_tagger)
-"""
-	Bool isTag(word):
-	Return True only if the given 'word' is a tag. else return False.
-"""
-def isTag(word):
-	return word[0] == '<'
-
-def load_appConfig():
-	file = open('settings.json', 'r')
-	config = json.load(file)
-	file.close()
-	return config
-"""
-	Array({}) getWordDictList(...):
-
-	return an updated dictList, with the new words and tags in 'word_list' and missing in dictList. 
-	If you have multiple tagged sentences for the same sentence but different tags,
-	you can use the same dictList to include the tags to each word.
-
-	Format:
-		dictList: each dictionary have one word with key 'text'. And one or more taggs for that word,
-					with each tag the key '<tagger>+"_label"'.
-
-	Parameters:
-		Array({}) dictList: Is an array of dictionarys, where each dictionary 
-						have one word and the tags for that word.
-						Example: [{"ner_label": "<E-PER>", "text": "Washington"},
-								  {"ner_label": "<B-PER>", "text": "George"}]
-		Array(String) word_list: Is an array of words. Is the tagged sentence splited by white spaces.
-					     Where each value can be one word or a tag. Each tag is next to their word.
-
-		String tagger: Is the tagger used to analize word_list sentence. It will be used to identify each tag type.
-"""
-def getWordDictList(dictList, word_list, tagger):
-	i=0#word+tags
-	j=0#word
-	# for each word in word_list. each itearation 
-	# we put 2 words 'act' and 'nextw' which could be a tag.
-	while i+1 < len(word_list):
-		new_word = False
-		if len(dictList) <= j: #in 'dictList' the actual word is missing
-			dictList.append({})# new word 
-			new_word = True
-
-		act=word_list[i]
-		nextw=word_list[i+1]
-		word_dict = dictList[j]
-
-		if new_word:
-			word_dict['text'] = act
-		if isTag(nextw[0]): 
-			word_dict[tagger+'_label'] = nextw # nextw is a tag
-			i+=1
-		else:
-			word_dict[tagger+'_label'] = "O" # not tag found -> Other tag
-		i+=1
-		j+=1
-
-	lastw=word_list[-1]
-	if not isTag(lastw[0]): # if last word is not a tag, print
-		if len(dictList) <= j:
-			dictList.append({})# new word
-			new_word = True
-		word_dict = dictList[j]
-		if new_word:
-			word_dict['text'] = lastw
-		word_dict[tagger+'_label'] = "O" # not tag found -> Other tag
-	return dictList
-
-"""
-	void print_CoNLL(...):
-
-	print in outFile, the results with CoNLL style (word+"  "+tag).
-	IMPORTANT: This function only print one tag type, indentified with 'tagger' parameter.
-
-	Parameters:
-		File outFile: is the file where results will be writed.
-
-		Array(String) sentences: is an array of sentences, where each value
-					 			 is a sentence with tags next to their word.
-
-		String tagger: Is the tagger used to analize given sentences. 
-						It will be used to identify each tag type.
-
-"""
-def print_CoNLL(outFile, sentences, tagger):
-	# iterate through sentences and outFile.write predicted labels
-	for sentence in sentences:
-		dictList = []
-		tagged_sent = sentence.to_tagged_string()
-		tagged_sent = tagged_sent.strip('\n\t') # remove special characters (\n\t)
-		word_list = tagged_sent.split(" ") # split by white spaces
-		dictList = getWordDictList(dictList, word_list, tagger)
-
-		for word_dict in dictList:
-			text = word_dict['text']
-			tag = word_dict[tagger+'_label']
-			outFile.write("{:>18}\t{:<8}\n".format(text, tag))	
-
-"""
-	void print_json(...):
-
-	print in outFile, the results in json format.
-
-	Parameters:
-		File outFile: is the file where results will be writed.
-
-		Array(Array(String)) sentences_listOfModels: is an array of sentences, where each value
-									 			 is a list of sentences tagged with one different tagger,
-									 			 where each sentence have tags next to their word. 
-									 			 *
-
-		Array(String) taggers: Is an array of strings, with the different taggers
-							   used to analize given sentences. 
-							   It will be used to identify each tag type.
-							   *
-	* NOTE: There are in the same position the tagger and the sentences tagged with that tagger. 
-			For example:
-				sentences_listOfModels[0] = (sentences tagged with 'ner')
-				tagger[0] = 'ner'
-
-"""
-def print_json(outFile, sentences_listOfModels, taggers):
-	word_dict = {}
-	
-	# iterate through sentences and outFile.write predicted labels
-	# every model have the same sentences, same words, different tags
-	for i in range(len(sentences_listOfModels[0])):#for sentence
-		dictList = []
-		for model in range(len(taggers)):# for model
-
-			model_sentences = sentences_listOfModels[model]#modelo "model"
-			sentence = model_sentences[i]#sentencia i-esima
-			tagged_sent = sentence.to_tagged_string()
-			tagged_sent = tagged_sent.strip('\n\t')#limpiar saltos de linea y tabs
-			word_list = tagged_sent.split(" ")
-			# son las mismas frases por lo que el numero de palabras son las mismas. solo varian las etiquetas
-			# cada diccionario corresponde a una palabra
-			dictList = getWordDictList(dictList, word_list, taggers[model])
-
-		for word_dict in dictList:
-			outFile.write(json.dumps(word_dict, indent = 4, sort_keys=True))
-
 
 """
 	void main(...):
@@ -236,6 +51,8 @@ def main(
 	tagger = 'ner',
 	json = False,
 	tag_info = False):
+	
+	config = load_appConfig()
 
 	in_filePath = in_filename
 	if json:
@@ -244,7 +61,7 @@ def main(
 	else:
 		out_filePath = out_filename + ".tsv"
 
-	code, flair_model = prep.obtain_model(algorithm, tagger, language, load_appConfig())
+	code, flair_model = prep.obtain_model(algorithm, tagger, language, config)
 	if code[0] == -1:#ERROR
 		print("Error with selected parameter.")
 		#END
@@ -254,7 +71,11 @@ def main(
 		try:
 			outFile = open(out_filePath, "w")
 			inFile = open(in_filePath, "r")
-			file_cases(inFile, outFile, json, flair_model, tagger_info=tag_info) # tf, fl
+			if ftag.file_cases(inFile, outFile, json, flair_model, config, tagger_info = tag_info) < 0:
+				#ERROR
+				outFile.close()
+				os.remove(out_filePath)
+				
 		finally:
 			if outFile:
 				outFile.close()
@@ -262,21 +83,25 @@ def main(
 				inFile.close()
 		print ("\nEnded tagging process.\n")
 
+def load_appConfig():
+	file = open('settings.json', 'r')
+	config = json.load(file)
+	file.close()
+	return config
 
 if "__main__" == __name__:
 	#################
 	### MAIN CALL ###
 	#################
-	"""
+
 	main(	
 			in_filename = "../tests/Input/english_text.txt", # do write format
-			out_filename = "../tests/Output/time_en", 	  # do NOT write format
+			out_filename = "../tests/Output/flair_en", 	  # do NOT write format
 			algorithm = 'Flair',
 			language = 'en',	#  'eu' = euskera		'es' = español		'en' = english		'ca' = catalan		'gl' = gallego
-			tagger = 'ner',#'../Models/trained_models/Flair/time/en/best-model.pt',		# 'ner'= (all languages)		'pos' = (only English and Spanish)		'chunk' = (only English)
+			tagger = '../Models/trained_models/Flair/time/en/best-model.pt',		# 'ner'= (all languages)		'pos' = (only English and Spanish)		'chunk' = (only English)
 			json = False,	# outfile format.
 			tag_info = True)  # info about tagger
-	"""
 	
 	if len( sys.argv ) != 8:
 		print( "Uso: {} <in_filename> <out_filename> <algorithm> <language> <tagger> <json> <tag_info>".format( sys.argv[0] ) )
@@ -300,33 +125,32 @@ if "__main__" == __name__:
 
 	#END
 
-
 """
-----------------------------------------------------------------------------------------------------------------------
-For text classification is needed other functions. At the moment does not work with this script. Only text tagging works 
-(for example: 'ner', 'pos' or 'pos-multi')
+	----------------------------------------------------------------------------------------------------------------------
+	For text classification is needed other functions. At the moment does not work with this script. Only text tagging works 
+	(for example: 'ner', 'pos' or 'pos-multi')
 
-Some interesting models (flair):
-- pos-multi: Part of speech (verb, noun, etc.), multiple languages (English, German, French,
-	 Italian, Dutch, Polish, Spanish, Swedish, Danish, Norwegian, Finnish and Czech)
-- ner: 4-class Named Entity Recognition, english model.
-- sentiment: text classification, [positive, negative] sentiment. English model.
-- frame: Semantic Frame Detection (experimental). Makes a distinction between two different meanings of the same word.
-		(Error with windows paths)
+	Some interesting models (flair):
+	- pos-multi: Part of speech (verb, noun, etc.), multiple languages (English, German, French,
+		 Italian, Dutch, Polish, Spanish, Swedish, Danish, Norwegian, Finnish and Czech)
+	- ner: 4-class Named Entity Recognition, english model.
+	- sentiment: text classification, [positive, negative] sentiment. English model.
+	- frame: Semantic Frame Detection (experimental). Makes a distinction between two different meanings of the same word.
+			(Error with windows paths)
 
 
-Some interesting models (transformer):
-- ner: 4-class Named Entity Recognition, english model. example: I-LOC 
-	notation:
-		x-LOC == Location
-		x-PER == Person
-		x-ORG == Organization
-		o == Other
+	Some interesting models (transformer):
+	- ner: 4-class Named Entity Recognition, english model. example: I-LOC 
+		notation:
+			x-LOC == Location
+			x-PER == Person
+			x-ORG == Organization
+			o == Other
 
-		B-x == Beginning of entity
-		I-x == Inside entity
-		O-x == Outside entity
-- sentiment-analysis: text classification, [positive, negative] sentiment. English model.
-- frame: Semantic Frame Detection (experimental). Makes a distinction between two different meanings of the same word.
-		(Error with windows paths)
+			B-x == Beginning of entity
+			I-x == Inside entity
+			O-x == Outside entity
+	- sentiment-analysis: text classification, [positive, negative] sentiment. English model.
+	- frame: Semantic Frame Detection (experimental). Makes a distinction between two different meanings of the same word.
+			(Error with windows paths)
 """

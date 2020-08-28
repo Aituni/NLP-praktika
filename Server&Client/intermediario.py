@@ -2,7 +2,7 @@ import json
 
 class Command:
 	File, Size, Parameters, Update = ("FLE", "SZE", "PRM", "UPD")
-	Close, Version, Quantity, Model = ("CLS", "VRS", "QTY", "MDL")
+	Close, Quantity, Model = ("CLS", "QTY", "MDL")
 	#resp
 	OK, Error = ('OK+', 'ER-')
 
@@ -12,10 +12,11 @@ class Parameters:
 
 	Error = {
 			0:" inserted value is not valid. insert valid one ",
-			1:" document not processed correctly",
+			1:" document not processed correctly.\n    Could be parameter's, model's or server's problem.",
 			2:" unknown Error",
 			3:" error with client/server connection",
-			4:" model not found."
+			4:" model not found.",
+			5:" invalid command"
 		 }
 
 #devuelve el paquete recibido con el comando y sin la marca de fin.
@@ -49,32 +50,34 @@ def recvall( s, size ):
 def download_file(s, outDir=''):
 	
 	msg = recvline(s).decode(Parameters.Coding) # SZE12345#filename
-	msg = msg[3:].split("#")
-	size = int(msg[0])
-	filename = msg[1]
+	if msg == Command.Size:
+		msg = msg[3:].split("#")
+		size = int(msg[0])
+		filename = msg[1]
 
-	downld_data = recvall(s,size)# file data
-	outfile = open(outDir+filename, "wb")
-	outfile.write(downld_data)
-	outfile.close()
+		downld_data = recvall(s,size)# file data
+		outfile = open(outDir+filename, "wb")
+		outfile.write(downld_data)
+		outfile.close()
 
-	print("\n Downloaded '{}' file.".format(filename))
-	return filename
+		print("\n Downloaded '{}' file.".format(filename))
+		return filename
+	return ""
 
 def upload_file(s, path):
 
 	file = open(path, "rb")
 	contenido = file.read()
+	file.close()
 	size = len(contenido)
 	filename = path.split("/")
 	filename = filename[-1]
 
 	msg = "{}{}#{}\r\n".format(Command.Size, str(size), filename) 
 	s.sendall(msg.encode(Parameters.Coding)) # SZE1234#filename\r\n
-
 	s.sendall(contenido) # file
-	file.close()
-	print("\n File uploaded")
+	
+	print("\n File uploaded: "+filename)
 
 def isOK(msg):
 	comand = msg[:3]
@@ -87,7 +90,7 @@ def isOK(msg):
 			error = Parameters.Error[code]
 		except:
 			error = Parameters.Error[2]
-		print(error)
+		print("\nERROR: "+error+"\n")
 		return False
 
 def load_appConfig(directory=''):
