@@ -1,34 +1,30 @@
 {
-    "json_taggers": [
-        "ner",
-        "pos",
-        "chunk"
-    ],
+    "version": 0.35,
     "params": {
+        "json": {
+            "true": "(.json) Print tags in json file (only english using Flair)",
+            "false": "(.tsv) Print in CoNLL format"
+        },
+        "tag_info": {
+            "true": "Yes. Write visually pretty and extra info about tagger (only tsv)",
+            "false": "No. Do not write extra info about tagger (only tsv)"
+        },
         "algorithm": {
             "Flair": "Flair (Recommended)",
             "Transformers": "Transformers (only ner, Experimental)"
         },
-        "json": {
-            "false": "(.tsv) Print in CoNLL format",
-            "true": "(.json) Print tags in json file (only english using Flair)"
+        "tagger": {
+            "ner": "(ner) Named Entity Recognition",
+            "pos": "(pos) Part Of Speech (spanish and english)",
+            "chunk": "(Chunk) (only english)",
+            "manual": "(manual) Use your own model"
         },
         "language": {
-            "ca": "Catalan",
-            "en": "English",
-            "es": "Espa\u00f1ol",
             "eu": "Euskera",
+            "es": "Espa\u00f1ol",
+            "en": "English",
+            "ca": "Catalan",
             "ga": "Gallego"
-        },
-        "tag_info": {
-            "false": "No. Do not write extra info about tagger (only tsv)",
-            "true": "Yes. Write visually pretty and extra info about tagger (only tsv)"
-        },
-        "tagger": {
-            "chunk": "(Chunk) (only english)",
-            "manual": "(manual) Use your own model",
-            "ner": "(ner) Named Entity Recognition",
-            "pos": "(pos) Part Of Speech (spanish and english)"
         }
     },
     "paths": {
@@ -36,6 +32,11 @@
         "server_out": "../tests/srvOUT/",
         "tests": "../tests/Input/"
     },
+    "json_taggers": [
+        "ner",
+        "pos",
+        "chunk"
+    ],
     "test_files": [
         "english_text.txt",
         "eusk_text.txt"
@@ -43,13 +44,12 @@
     "url": {
         "Flair": {
             "ner": {
-                "en": "",
-                "es": ""
+                "es": "",
+                "en": ""
             },
             "pos": {
                 "en": ""
             }
         }
-    },
-    "version": 0.34
+    }
 }

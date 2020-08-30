@@ -50,19 +50,17 @@ def recvall( s, size ):
 def download_file(s, outDir=''):
 	
 	msg = recvline(s).decode(Parameters.Coding) # SZE12345#filename
-	if msg == Command.Size:
-		msg = msg[3:].split("#")
-		size = int(msg[0])
-		filename = msg[1]
+	msg = msg[3:].split("#")
+	size = int(msg[0])
+	filename = msg[1]
 
-		downld_data = recvall(s,size)# file data
-		outfile = open(outDir+filename, "wb")
-		outfile.write(downld_data)
-		outfile.close()
+	downld_data = recvall(s,size)# file data
+	outfile = open(outDir+filename, "wb")
+	outfile.write(downld_data)
+	outfile.close()
 
-		print("\n Downloaded '{}' file.".format(filename))
-		return filename
-	return ""
+	print("\n Downloaded '{}' file.".format(filename))
+	return filename
 
 def upload_file(s, path):
 

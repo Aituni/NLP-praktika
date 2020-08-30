@@ -148,7 +148,6 @@ def service(s, config):
 				if os.path.isfile(outFilepath):
 					resp = inter.Command.OK+"\r\n"
 					s.sendall(resp.encode(CODING))
-
 					inter.upload_file(s, outFilepath)
 				else:
 					#file does not exist, could be model error,

@@ -4,7 +4,7 @@ import json, sys
 class config:
 
 	# UPDATE AND EXECUTE AFTER ANY CHANGE 
-	VERSION = 0.34
+	VERSION = 0.35
 
 	# key : "explicacion"
 	params = {
@@ -83,7 +83,7 @@ class config:
 
 def make_json():
 	file = open('settings.json', 'w')
-	file.write(json.dumps(config.ALL, indent = 4, sort_keys=True))
+	file.write(json.dumps(config.ALL, indent = 4, sort_keys=False))
 	file.close()
 
 def get_version():

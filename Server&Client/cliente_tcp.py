@@ -105,7 +105,8 @@ def client(s): #return True to continue, False to exit
 		msg = "{}{}\r\n".format(inter.Command.File, file_num_str) # FLE1\r\n
 		s.sendall( msg.encode( CODING ))
 
-		if not inter.isOK(inter.recvline(s).decode(CODING)):
+		resp = inter.recvline(s).decode(CODING)
+		if not inter.isOK(resp):
 			return False #Exit
 		inter.download_file(s, outDir=OUTDIR[0])
 
@@ -170,11 +171,11 @@ def obtainSendDownload_file(s, directory = False):
 	for file in files:
 		inter.upload_file(s, file)
 		if not inter.isOK(inter.recvline(s).decode(CODING)):
-			print("Error with '{}' file".format(str(file)))
+			print("\n\t-- Error with '{}' file".format(str(file)))
 		else:
 			inter.download_file(s, outDir=outdir)
 			count += 1
-			print("Completed {}/{} files".format(str(count), str(file_qty)))
+			print("\n\t++ Successfully completed {}/{} files".format(str(count), str(file_qty)))
 
 """	Sections:
 help	title	options test 	upload_file		upload_dir 	parameters """
