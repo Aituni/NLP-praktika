@@ -93,16 +93,16 @@ if "__main__" == __name__:
 	#################
 	### MAIN CALL ###
 	#################
-
+	"""
 	main(	
 			in_filename = "../tests/Input/english_text.txt", # do write format
-			out_filename = "../tests/Output/flair_en", 	  # do NOT write format
+			out_filename = "../tests/Output/flair_pos_ca", 	  # do NOT write format
 			algorithm = 'Flair',
-			language = 'en',	#  'eu' = euskera		'es' = español		'en' = english		'ca' = catalan		'gl' = gallego
-			tagger = '../Models/trained_models/Flair/time/en/best-model.pt',		# 'ner'= (all languages)		'pos' = (only English and Spanish)		'chunk' = (only English)
+			language = 'ca',	#  'eu' = euskera		'es' = español		'en' = english		'ca' = catalan		'gl' = gallego
+			tagger = 'pos',#'../Models/trained_models/Flair/time/en/best-model.pt',		# 'ner'= (all languages)		'pos' = (only English and Spanish)		'chunk' = (only English)
 			json = False,	# outfile format.
 			tag_info = True)  # info about tagger
-	
+	"""
 	if len( sys.argv ) != 8:
 		print( "Uso: {} <in_filename> <out_filename> <algorithm> <language> <tagger> <json> <tag_info>".format( sys.argv[0] ) )
 		exit( 1 )

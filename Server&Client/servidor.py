@@ -10,10 +10,10 @@ ER_MSG = inter.Parameters.Error
 APP_PATH = "../Tagger/"
 ManModelDIR = ["./ManualModels/"]
 
-def servidor():
+def servidor(puerto):
 	s = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
 
-	s.bind( ('', PORT) )
+	s.bind( ('', puerto) )
 	s.listen( 5 )
 
 	config_version = 0
@@ -22,9 +22,10 @@ def servidor():
 	if main_pid:
 		#dad
 		while True:
+			#QUIT Option
 			if input() == "q":
 				clean_files(inter.load_appConfig(), closemode = True)
-				os.kill(main_pid, signal.SIGKILL) #or signal.SIGTERM 
+				os.killpg(os.getpid(), signal.SIGKILL) #or signal.SIGTERM 
 				s.close()
 				exit(0)
 
@@ -39,12 +40,17 @@ def servidor():
 		else:
 			#son
 			s.close()
-
 			config = inter.load_appConfig(APP_PATH) # use config directly from Tagger folder (updated config)
-
 			makeDirs(config)
 			while True:
-				if not service(dialogo, config):
+				try:
+					sigue = service(dialogo, config)
+				except EOFError as e:
+					sigue = False
+					print("\nError: ")
+					print(e)		
+				
+				if not sigue:
 					clean_files(config)
 					break
 			print( "Connection closure request received from {} : {}".format( dir_cli[0], dir_cli[1] ) )
@@ -124,6 +130,7 @@ def service(s, config):
 			outFilename = "OUT_"+ outFilename
 			outFilepath = config['paths']['server_out']+outFilename
 
+
 			pid = os.fork()
 			if not pid:
 				#son
@@ -132,6 +139,7 @@ def service(s, config):
 					APP_PATH, filepath, outFilepath, alg, lan, tag, json, tag_info )
 				os.system(msg)
 				sys.exit()
+
 			else:
 				try:
 					# wait return a tuple, killed process pid is the first one
@@ -185,4 +193,14 @@ def clean_files(config, closemode = False):
 			os.remove(file)
 
 if "__main__" == __name__:
-	servidor()
+	if len( sys.argv ) == 1:
+		# default port
+		servidor(PORT)
+
+	elif len( sys.argv ) == 2:
+		# manually inserted port
+		servidor(int(sys.argv[1]))
+
+	else:
+		print( "Uso: {} <puerto (optional)>".format( sys.argv[0] ) )
+		exit( 1 )

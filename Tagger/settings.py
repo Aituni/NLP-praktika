@@ -4,16 +4,15 @@ import json, sys
 class config:
 
 	# UPDATE AND EXECUTE AFTER ANY CHANGE 
-	VERSION = 0.35
+	VERSION = 0.352
 
 	# key : "explicacion"
 	params = {
 
 		# BOOLEANS
 		'json' : {
-			True : '(.json) Print tags in json file (only english using Flair)',
-			False : '(.tsv) Print in CoNLL format'
-			
+			False : '(.tsv) Print in CoNLL format',
+			True : '(.json) Print tags in json file (only english using Flair)'			
 		},
 
 		'tag_info' : {
@@ -21,9 +20,10 @@ class config:
 			False : 'No. Do not write extra info about tagger (only tsv)'
 		},
 
+		# NO BOOLEANS
 		'algorithm' : {
 			'Flair' : 'Flair (Recommended)',
-			'Transformers' : 'Transformers (only ner, Experimental)',
+			'Transformers' : 'Transformers (only ner_eu, Experimental)',
 		},
 
 		'tagger' : {
@@ -34,9 +34,9 @@ class config:
 		},
 
 		'language' : {
-			'eu' : 'Euskera',
-			'es' : 'Español',
 			'en' : 'English',
+			'es' : 'Español',
+			'eu' : 'Euskera',
 			'ca' : 'Catalan',
 			'ga' : 'Gallego'
 		}	

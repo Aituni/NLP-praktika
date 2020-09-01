@@ -10,53 +10,54 @@ ER_MSG = inter.Parameters.Error
 OUTDIR = ["./Output/"]
 CONFIG = [0]
 
-def main():
-	if len( sys.argv ) != 2:
-		print( "Uso: {} <servidor>".format( sys.argv[0] ) )
-		exit( 1 )
+def main(direccion, puerto):
 
-	dir_serv = (sys.argv[1], PORT)
-
+	dir_serv = (direccion, puerto)
 	s = socket.socket( socket.AF_INET, socket.SOCK_STREAM )
 	#print(dir_serv)
-	s.connect( dir_serv )
+	try:
+		s.connect( dir_serv )
+	except ConnectionRefusedError:
+		print("Error: Server is Offline.")
+		s.close()
+		exit()
+
+	closed_serv = False
+	if not os.path.exists(OUTDIR[0]):
+		os.makedirs(OUTDIR[0])
+
+	try:
+		checkVersion_and_Update(s)
+	except EOFError as e:
+		seguir = False
+		closed_serv = True
+		print("\nError: ")
+		print(e)
 
 	while True:
-		if not client(s):
+		try:
+			seguir = client(s)
+		except EOFError as e:
+			seguir = False
+			closed_serv = True
+			print("\nError: ")
+			print(e)
+
+		if not seguir:
 			print_menu('turn_off')
 			break
 		else:
 			print_menu('restart')
-	s.sendall("{}\r\n".format(inter.Command.Close).encode(CODING))	
+	
+	if not closed_serv:		
+		s.sendall("{}\r\n".format(inter.Command.Close).encode(CODING))	
 	s.close()
 
 
 def client(s): #return True to continue, False to exit
 
 	print_menu("title")
-	#----------------------#
-	#   VERSION / UPDATE   #
-	#----------------------#
-	s.sendall("{}v\r\n".format(inter.Command.Update).encode(CODING))# ask for last version num(float)
-	msg = inter.recvline(s).decode(CODING)# VRS0.2\r\n
-
-	if not inter.isOK(msg):
-		return False
 		
-	version = float(msg[3:])
-	try:
-		if not CONFIG[0]:
-			CONFIG[0] = inter.load_appConfig()		
-		if CONFIG[0]['version'] < version:
-			update_appConfig(s)
-			CONFIG[0] = inter.load_appConfig()
-	except:
-		update_appConfig(s)
-		CONFIG[0] = inter.load_appConfig()
-		
-	if not os.path.exists(OUTDIR[0]):
-		os.makedirs(OUTDIR[0])
-
 	#----------------#
 	#   PARAMETERS   #
 	#----------------#
@@ -341,5 +342,33 @@ def getSendModel(s):
 	CONFIG[0]['params']['tagger'][modelID] = path + "(temporal)" # local config
 	return True
 
+def checkVersion_and_Update(s):
+	s.sendall("{}v\r\n".format(inter.Command.Update).encode(CODING))# ask for last version num(float)
+	msg = inter.recvline(s).decode(CODING)# VRS0.2\r\n
+
+	if not inter.isOK(msg):
+		return False
+		
+	version = float(msg[3:])
+	try:
+		if not CONFIG[0]:
+			CONFIG[0] = inter.load_appConfig()		
+		if CONFIG[0]['version'] < version:
+			update_appConfig(s)
+			CONFIG[0] = inter.load_appConfig()
+	except:
+		update_appConfig(s)
+		CONFIG[0] = inter.load_appConfig()
+
 if "__main__" == __name__:
-	main()
+	if len( sys.argv ) == 2:
+		# default port
+		main(sys.argv[1], PORT)
+
+	elif len( sys.argv ) == 3:
+		# manually inserted port
+		main(sys.argv[1], int(sys.argv[2]))
+
+	else:
+		print( "Uso: {} <servidor> <puerto (optional)>".format( sys.argv[0] ) )
+		exit( 1 )
