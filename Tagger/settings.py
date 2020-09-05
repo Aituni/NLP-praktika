@@ -4,7 +4,7 @@ import json, sys
 class config:
 
 	# UPDATE AND EXECUTE AFTER ANY CHANGE 
-	VERSION = 0.352
+	VERSION = 0.353
 
 	# key : "explicacion"
 	params = {
@@ -54,7 +54,7 @@ class config:
 
 	## demo
 
-	test_files = ['english_text.txt', 'eusk_text.txt']
+	test_files = ['english_text.txt', 'eusk_text.txt', 'esp_text.txt']
 
 	## url
 

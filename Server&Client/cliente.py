@@ -40,7 +40,7 @@ def main(direccion, puerto):
 		except EOFError as e:
 			seguir = False
 			closed_serv = True
-			print("\nError: ")
+			print("\nError: "+ ER_MSG[3])
 			print(e)
 
 		if not seguir:

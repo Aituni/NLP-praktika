@@ -44,13 +44,13 @@ import json
 					default = False
 """
 def main(
-	in_filename = 'english_text.txt',
-	out_filename = '1',
-	algorithm = 'F',
+	in_filename,
+	out_filename,
+	algorithm = 'Flair',
 	language = 'en',
 	tagger = 'ner',
 	json = False,
-	tag_info = False):
+	tag_info = True):
 	
 	config = load_appConfig()
 
@@ -84,7 +84,10 @@ def main(
 		print ("\nEnded tagging process.\n")
 
 def load_appConfig():
-	file = open('settings.json', 'r')
+	try:
+		file = open('settings.json', 'r') # local exec
+	except FileNotFoundError:
+		file = open('../Tagger/settings.json', 'r') #for opening from server
 	config = json.load(file)
 	file.close()
 	return config
@@ -103,7 +106,7 @@ if "__main__" == __name__:
 			json = False,	# outfile format.
 			tag_info = True)  # info about tagger
 	"""
-	if len( sys.argv ) != 8:
+	if len( sys.argv ) > 8:
 		print( "Uso: {} <in_filename> <out_filename> <algorithm> <language> <tagger> <json> <tag_info>".format( sys.argv[0] ) )
 		exit( 1 )
 	elif len( sys.argv ) == 8:

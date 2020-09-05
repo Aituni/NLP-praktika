@@ -24,11 +24,13 @@ def servidor(puerto):
 		while True:
 			#QUIT Option
 			if input() == "q":
-				clean_files(inter.load_appConfig(), closemode = True)
+				print("Closing server")
+				clean_files(inter.load_appConfig(APP_PATH), closemode = True)
 				os.killpg(os.getpid(), signal.SIGKILL) #or signal.SIGTERM 
 				s.close()
 				exit(0)
 
+	print("Server running")
 	while True:
 		dialogo, dir_cli = s.accept()
 		print( "Client conected from {} : {}.".format( dir_cli[0], dir_cli[1] ) )
@@ -47,8 +49,9 @@ def servidor(puerto):
 					sigue = service(dialogo, config)
 				except EOFError as e:
 					sigue = False
-					print("\nError: ")
-					print(e)		
+					print("Error with client: {} : {}".format( dir_cli[0], dir_cli[1] ))	
+					print("\nError: "+ ER_MSG[3])
+					print(e)	
 				
 				if not sigue:
 					clean_files(config)

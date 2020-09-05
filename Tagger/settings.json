@@ -1,5 +1,5 @@
 {
-    "version": 0.352,
+    "version": 0.353,
     "params": {
         "json": {
             "false": "(.tsv) Print in CoNLL format",
@@ -39,7 +39,8 @@
     ],
     "test_files": [
         "english_text.txt",
-        "eusk_text.txt"
+        "eusk_text.txt",
+        "esp_text.txt"
     ],
     "url": {
         "Flair": {
