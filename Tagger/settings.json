@@ -1,5 +1,5 @@
 {
-    "version": 0.353,
+    "version": 0.365,
     "params": {
         "json": {
             "false": "(.tsv) Print in CoNLL format",
@@ -16,7 +16,8 @@
         "tagger": {
             "ner": "(ner) Named Entity Recognition",
             "pos": "(pos) Part Of Speech (spanish and english)",
-            "chunk": "(Chunk) (only english)",
+            "chunk": "(Chunk) (only basque)",
+            "time": "(time) (only english)",
             "manual": "(manual) Use your own model"
         },
         "language": {

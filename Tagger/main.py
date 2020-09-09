@@ -9,19 +9,14 @@ import json
 		It will analyze given document ('in_filename') with choosen settings in the parameters
 		and print results in 'out_filename' document.
 
-		Given document path is defined by an global variable. Default: "../tests/Input/" 
-		Output document path is defined by an global variable. Default: "../tests/Output/" 
-
 	Parameters:
 		String in_filename: Is the name of the file that contain the sentences that we want to analyze. DO WRITE FORMAT
-					default: 'english_text.txt'
 
 		String out_filename: Is the file name where the results will be writed. DO NOT WRITE FORMAT (.txt, ...)
 					  		 if JSON = True, the file will be in 'json' format, else 'tsv'.
-					  default: '1'
 
 		String algorithm:  Is the algorithm we want to use. 
-				Options:	'F' = Flair 	'T' = Transformers (experimental) 
+				Options:	'Flair' ,	'Transformers'  (experimental) 
 					default: 'F'
 
 		String language: Is the language of input document.
@@ -32,16 +27,17 @@ import json
 				Options: - (manually) => insert full directory path or models official tagger name. In this case, use only one algorithm. 
 					 - 'ner' = Named Entity Recognition
 					 - 'pos' = Part Of Speech (only English and Spanish)
-					 - 'chunk' = chunking  (only English)
+					 - 'chunk' = chunking  (only Basque)
+					 - 'time' = (time) (only english)
 					default: 'ner'
 		Bool json: outfile format (json or tsv).
 				Options:   	True = print more info for each word (NER, POS, Chunking) in json format. ('only en')
 					   		False = print chosen tag in 'tagger' in tsv format, CoNLL style.
 					default = False
 		Bool tag_info: Used Tagger info.
-				Options:   	True = print few info about the tagger (ONLY WITH JSON = False)
+				Options:   	True = print few info about the tagger and everything prettier (ONLY WITH JSON = False)
 					   		False = Only print words and tags.
-					default = False
+					default = True
 """
 def main(
 	in_filename,
@@ -106,7 +102,7 @@ if "__main__" == __name__:
 			json = False,	# outfile format.
 			tag_info = True)  # info about tagger
 	"""
-	if len( sys.argv ) > 8:
+	if len( sys.argv ) != 8:
 		print( "Uso: {} <in_filename> <out_filename> <algorithm> <language> <tagger> <json> <tag_info>".format( sys.argv[0] ) )
 		exit( 1 )
 	elif len( sys.argv ) == 8:
@@ -120,9 +116,9 @@ if "__main__" == __name__:
 		main(	
 			in_filename = sys.argv[1], # do write format
 			out_filename = sys.argv[2], # do NOT write format
-			algorithm = sys.argv[3],	 #	Flair(Recommended) 	Transformers (experimental) 
+			algorithm = sys.argv[3],#	Flair(Recommended) 	Transformers (experimental) 
 			language = sys.argv[4],	#  'eu' = euskera		'es' = español		'en' = english		'ca' = catalan		'gl' = gallego
-			tagger = sys.argv[5],		# 'ner'= (all languages)		'pos' = (only English and Spanish)		'chunk' = (only English)
+			tagger = sys.argv[5],# 'ner'= (all languages)		'pos' = (only English and Spanish)		'chunk' = (only English)
 			json = js,	# outfile format.
 			tag_info = tag)  # info about tagger
 

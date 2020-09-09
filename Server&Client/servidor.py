@@ -169,7 +169,7 @@ def service(s, config):
 		s.sendall(resp.encode(CODING)) # OK+ TODO: app response
 
 	return True	
-
+#makes the directorys
 def makeDirs(config):
 	if not os.path.exists(ManModelDIR[0]):
 		os.makedirs(ManModelDIR[0])
@@ -179,7 +179,7 @@ def makeDirs(config):
 
 	if not os.path.exists(config['paths']['server_out'][:-1]):
 		os.makedirs(config['paths']['server_out'][:-1])
-
+#remove the files. with closemode, remove folders too.
 def clean_files(config, closemode = False):
 	if closemode:
 		rmtree(config['paths']['server_in'], ignore_errors=True)

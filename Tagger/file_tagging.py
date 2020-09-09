@@ -17,9 +17,11 @@ import json
 					False, will make output be writed in tsv format with CoNLL style.
 
 		String tf_tagger: model name or path for tagging or classification using transformers.
-							put	empty string ("") if you dont want to clasify with transformers.
+							
 		String fl_tagger: model name or path for tagging or classification using flair.
-							put	empty string ("") if you dont want to clasify with flair.
+
+		Bool tagger_info: model's name will be printed, and the style will be prettier
+
 """
 def file_cases(inFile, outFile, json, fl_tagger, settings, tagger_info=True):
 	
@@ -41,7 +43,10 @@ def file_cases(inFile, outFile, json, fl_tagger, settings, tagger_info=True):
 		results = []
 		taggers = settings['json_taggers']
 		for tagger in taggers:
-			results.append(fl.tag_listSentences(text, tagger))
+			sentences = fl.tag_listSentences(text, tagger)
+			if not sentences:
+				return -1
+			results.append(sentences)
 		print_json(outFile, results, taggers)
 	else:
 		sentences = fl.tag_listSentences(text, fl_tagger)
@@ -116,7 +121,7 @@ def getWordDictList(dictList, word_list, tagger):
 """
 	void print_CoNLL(...):
 
-	print in outFile, the results with CoNLL style (word+"  "+tag).
+	print in outFile, the results with CoNLL style (word+"/t"+tag).
 	IMPORTANT: This function only print one tag type, indentified with 'tagger' parameter.
 
 	Parameters:
@@ -127,6 +132,8 @@ def getWordDictList(dictList, word_list, tagger):
 
 		String tagger: Is the tagger used to analize given sentences. 
 						It will be used to identify each tag type.
+
+		Bool tagger_info: model's name will be printed, and the style will be prettier
 
 """
 def print_CoNLL(outFile, sentences, tagger, tagger_info):

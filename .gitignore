@@ -1,14 +1,6 @@
 
-Tutorial/__pycache__/
 Models/trained_models/
 Tagger/__pycache__/
-tests/Input/1.txt
-tests/Output/1.txt
-tests/Output/1.json
-tests/Output/OUT*
-tests/srvIN/*
-tests/srvOUT/*
 Server&Client/__pycache__/
-Server&Client/a
 Server&Client/carpet/
 Server&Client/Output/

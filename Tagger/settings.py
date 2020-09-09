@@ -4,7 +4,7 @@ import json, sys
 class config:
 
 	# UPDATE AND EXECUTE AFTER ANY CHANGE 
-	VERSION = 0.353
+	VERSION = 0.365
 
 	# key : "explicacion"
 	params = {
@@ -29,8 +29,10 @@ class config:
 		'tagger' : {
 			'ner' : '(ner) Named Entity Recognition',
 			'pos' : '(pos) Part Of Speech (spanish and english)',
-			'chunk' : '(Chunk) (only english)',
+			'chunk' : '(Chunk) (only basque)',
+			'time' : '(time) (only english)',
 			'manual' : '(manual) Use your own model'
+
 		},
 
 		'language' : {
