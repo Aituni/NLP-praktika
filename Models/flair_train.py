@@ -9,8 +9,8 @@ from flair.trainers import ModelTrainer
 from torch.optim.adam import Adam
 import torch
 
-def train_flair_ner(path):
-# 1. get the corpus
+def train_FLAIR(path, lr, batch, epochs):
+    # 1. get the corpus
     corpus : Corpus = NER_BASQUE()
     print(corpus)
 
@@ -25,8 +25,8 @@ def train_flair_ner(path):
     embedding_types: List[TokenEmbeddings] = [
 
       #fastText official embeddings for Basque
-      #CharacterEmbeddings(), # azkarrago egiteko entrenamendua
-      #WordEmbeddings('eu'),
+      CharacterEmbeddings(), # azkarrago egiteko entrenamendua
+      WordEmbeddings('eu'),
       
       # contextual string embeddings, forward
       FlairEmbeddings('eu-forward'),
@@ -35,12 +35,11 @@ def train_flair_ner(path):
       # contextual string embeddings, backward
       FlairEmbeddings('eu-backward'),
       #PooledFlairEmbeddings('eu-backward'),
-
     ]
-
-    embeddings: StackedEmbeddings = StackedEmbeddings(mini_batch_chunk_size=4, # optionally set this if transformer is too much for your machine
+    
+    embeddings: StackedEmbeddings = StackedEmbeddings(#mini_batch_chunk_size=4, # optionally set this if transformer is too much for your machine
                                                       embeddings=embedding_types)
-
+    
     # initialize sequence tagger
     tagger: SequenceTagger = SequenceTagger(hidden_size=256,
                                           embeddings=embeddings,
@@ -55,13 +54,13 @@ def train_flair_ner(path):
       trainer.train('poolftchar0' + str(i), train_with_dev=False, max_epochs=150)
     """
     trainer.train(path,
-                learning_rate=0.1,
-                mini_batch_size=32,
-                max_epochs=150,
+                learning_rate = lr,
+                mini_batch_size = batch,
+                max_epochs = epochs,
                 embeddings_storage_mode='gpu')
-
-def train_TRFM(path):
     
+def train_TRFM(path, lr, batch, epochs):
+
     # 1. get the corpus
     corpus: Corpus = NER_BASQUE()
     print(corpus)
@@ -89,17 +88,15 @@ def train_TRFM(path):
 
     # 6. start the training
     trainer.train(path,
-                  learning_rate=3e-5, # use very small learning rate
-                  mini_batch_size=16,
-                  #mini_batch_chunk_size=4, # optionally set this if transformer is too much for your machine
-                  max_epochs=5, # terminate after 5 epochs
-                  embeddings_storage_mode='gpu'
-                  )
+            learning_rate = lr,
+            mini_batch_size = batch,
+            max_epochs = epochs,
+            embeddings_storage_mode='gpu')
 
-def train_flair_time(path):
+def train_flair_time(path, lr, batch, epochs):
 
     # 1. get the corpus
-    corpus_folder = '../../database/timeTags'
+    corpus_folder = '/content/drive/My Drive/Practicas/Database/timetag'
     columns = {0: "text", 1: "time"}
     corpus : Corpus = ColumnCorpus(corpus_folder, columns,
                                train_file='EN_train.tsv',
@@ -146,11 +143,12 @@ def train_flair_time(path):
 
     # 7. start training
     trainer.train(path,
-              learning_rate=0.1,
-              mini_batch_size=32,
-              max_epochs=150)
+                learning_rate = lr,
+                mini_batch_size = batch,
+                max_epochs = epochs,
+                embeddings_storage_mode='gpu')
 
-def train_flair_chunk(path):
+def train_flair_chunk(path, lr, batch, epochs):
     # 1. get the corpus
     corpus_folder = '/content/drive/My Drive/Practicas/Database/chunk'
     columns = {0: "text", 1: "parts", 2: "chunk"}
@@ -199,21 +197,20 @@ def train_flair_chunk(path):
     trainer: ModelTrainer = ModelTrainer(tagger, corpus)
 
     trainer.train(path,
-                learning_rate=0.1,
-                mini_batch_size=32,
-                max_epochs=150,
+                learning_rate = lr,
+                mini_batch_size = batch,
+                max_epochs = epochs,
                 embeddings_storage_mode='gpu')
 
-if "__main__" == __name__:
+if "__main__" == __name__: # hay que actualizar las carpetas, abajo y en las funciones
 
-    train_TRFM("./trained_models/Transformer/NER")
+    train_FLAIR('/content/drive/My Drive/Practicas/Training_models/Flair', lr = 0.2, batch = 32, epochs = 150) #OK
 
-    #train_flair_ner()
-    
-    #train_flair_time("./trained_models/Flair/time")
+    #train_flair_time('/content/drive/My Drive/Practicas/Training_models/Time', lr = 5e-2, batch = 8, epochs = 100) # OK
 
-    #train_flair_chunk("./trained_models/Flair/chunk/eu")
+    #train_flair_chunk('/content/drive/My Drive/Practicas/Training_models/chunk', lr = 0.1, batch = 16, epochs = 150) #OK
 
+    #train_TRFM('/content/drive/My Drive/Practicas/Training_models/TRFM', lr = 3e-5, batch = 16, epochs = 5) #OK (problema al usar el modelo)
 
     #import torch
     #torch.cuda.empty_cache()
